@@ -31,7 +31,7 @@ export function parse(soap: string) {
                 return m ? m[2] : name;
             }
         ]
-    })
+    });
 }
 
 export function requestCommand(oxaddr: Oxaddr, methodName: string, soap: string) {
@@ -39,7 +39,7 @@ export function requestCommand(oxaddr: Oxaddr, methodName: string, soap: string)
         let xml = '';
         request(oxaddr, soap).then((res) => {
             xml = res;
-            return parse(res)
+            return parse(res);
         }).then((result) => {
             const fault = getFaultReason(result);
             if (fault) {
@@ -48,13 +48,13 @@ export function requestCommand(oxaddr: Oxaddr, methodName: string, soap: string)
                 const parsed = parseResponseResult(methodName, result);
                 if(parsed) {
                     resolve({
-                        'soap'     : xml,
-                        'formatted': mHtml.prettyPrint(xml, {indent_size: 2}),
-                        'converted': result,
-                        'data': parsed
-                    })
+                        soap     : xml,
+                        formatted: mHtml.prettyPrint(xml, {indent_size: 2}),
+                        converted: result,
+                        data: parsed
+                    });
                 } else {
-                    reject(new Error('The device seems to not support the ' + methodName + '() method.'))
+                    reject(new Error('The device seems to not support the ' + methodName + '() method.'));
                 }
             }
         }).catch((err) => reject(err));
@@ -111,7 +111,7 @@ function request(oxaddr: Oxaddr, soap: string): Promise<string> {
                     let xml = '';
                     res.on('data', (chunk) => {
                         xml += chunk;
-                    })
+                    });
 
                     res.on('end', () => {
                         if (req) {
@@ -154,7 +154,7 @@ function request(oxaddr: Oxaddr, soap: string): Promise<string> {
 
                 req.on('timeout', () => {
                     req.abort();
-                })
+                });
 
                 req.on('error', (err) => {
                     req.removeAllListeners('error');
@@ -172,7 +172,7 @@ function getFaultReason(r: any): string {
         try {
             const reasonEl = r.Body.Fault.Reason;
             if (reasonEl.Text) {
-                return reasonEl.Text
+                return reasonEl.Text;
             }
             const codeEl = r.Body.Fault.Code;
 			if(codeEl.Value) {
@@ -202,8 +202,8 @@ function parseResponseResult(methodName: string, res: any) {
     }
 
 function createSoapUserToken(diff: number, user: string, pass: string) {
-        if (!diff) { diff = 0};
-        if (!pass) { pass = ''};
+        if (!diff) { diff = 0;}
+        if (!pass) { pass = '';}
         const date = (new Date(Date.now() + diff)).toISOString();
         const nonceBuffer = createNonce(16);
         const nonceBase64 = nonceBuffer.toString('base64');

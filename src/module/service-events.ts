@@ -1,4 +1,4 @@
-import { OnvifServiceBase, OnvifServiceBaseConfigs } from "./service-base";
+import { OnvifServiceBase, OnvifServiceBaseConfigs } from './service-base';
 import { requestCommand } from './soap';
 
 export class OnvifServiceEvents extends OnvifServiceBase {

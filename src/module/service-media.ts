@@ -1,5 +1,5 @@
-import { OnvifServiceBase, OnvifServiceBaseConfigs } from "./service-base";
-import { Command, requestCommand } from "./soap";
+import { OnvifServiceBase, OnvifServiceBaseConfigs } from './service-base';
+import { Command, requestCommand } from './soap';
 
 export class OnvifServiceMedia extends OnvifServiceBase {
     constructor(configs: OnvifServiceMediaConfigs) {
@@ -25,34 +25,34 @@ export class OnvifServiceMedia extends OnvifServiceBase {
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:GetStreamUri>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetStreamUri", soap);
+        return requestCommand(this.oxaddr, 'GetStreamUri', soap);
     }
 
     getVideoEncoderConfigurations(): Promise<Command> {
         const soapBody = '<trt:GetVideoEncoderConfigurations />';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetVideoEncoderConfigurations", soap);
+        return requestCommand(this.oxaddr, 'GetVideoEncoderConfigurations', soap);
     }
 
-    getVideoEncoderConfiguration(params: GetVideoEncoderConfigurationParams): Promise<Command> {
+    getVideoEncoderConfiguration(params: ConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetVideoEncoderConfiguration>';
 		soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:GetVideoEncoderConfiguration>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetVideoEncoderConfigurations", soap);
+        return requestCommand(this.oxaddr, 'GetVideoEncoderConfiguration', soap);
     }
 
-    getCompatibleVideoEncoderConfigurations(params: GetCompatibleVideoEncoderConfigurationsParams): Promise<Command> {
+    getCompatibleVideoEncoderConfigurations(params: ConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetCompatibleVideoEncoderConfigurations>';
 		soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:GetCompatibleVideoEncoderConfigurations>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "CompatibleVideoEncoderConfigurations", soap);
+        return requestCommand(this.oxaddr, 'CompatibleVideoEncoderConfigurations', soap);
     }
 
-    getVideoEncoderConfigurationOptions(params: GetVideoEncoderConfigurationOptionsParams): Promise<Command> {
+    getVideoEncoderConfigurationOptions(params: ProfileAndConfigurationTokenOptionalParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetVideoEncoderConfigurationOptions>';
 		if(params.ProfileToken) {
@@ -63,31 +63,31 @@ export class OnvifServiceMedia extends OnvifServiceBase {
 		}
 		soapBody += '</trt:GetVideoEncoderConfigurationOptions>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "VideoEncoderConfigurationOptions", soap);
+        return requestCommand(this.oxaddr, 'VideoEncoderConfigurationOptions', soap);
     }
 
-    getGuaranteedNumberOfVideoEncoderInstances(params: GetGuaranteedNumberOfVideoEncoderInstancesParams): Promise<Command> {
+    getGuaranteedNumberOfVideoEncoderInstances(params: ConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetGuaranteedNumberOfVideoEncoderInstances>';
 		soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:GetGuaranteedNumberOfVideoEncoderInstances>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GuaranteedNumberOfVideoEncoderInstances", soap);
+        return requestCommand(this.oxaddr, 'GuaranteedNumberOfVideoEncoderInstances', soap);
     }
 
     getProfiles(): Promise<Command> {
         const soapBody = '<trt:GetProfiles />';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetProfiles", soap);
+        return requestCommand(this.oxaddr, 'GetProfiles', soap);
     }
 
-    getProfile(params: GetProfileParams): Promise<Command> {
+    getProfile(params: ProfileTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetProfile>';
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:GetProfile>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetProfile", soap);
+        return requestCommand(this.oxaddr, 'GetProfile', soap);
     }
 
     createProfile(params: CreateProfileParams): Promise<Command> {
@@ -99,60 +99,60 @@ export class OnvifServiceMedia extends OnvifServiceBase {
 		}
 		soapBody += '</trt:CreateProfile>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "CreateProfile", soap);
+        return requestCommand(this.oxaddr, 'CreateProfile', soap);
     }
 
-    deleteProfile(params: DeleteProfileParams): Promise<Command> {
+    deleteProfile(params: ProfileTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:DeleteProfile>';
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:DeleteProfile>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "DeleteProfile", soap);
+        return requestCommand(this.oxaddr, 'DeleteProfile', soap);
     }
 
     getVideoSources(): Promise<Command> {
         const soapBody = '<trt:GetVideoSources />';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetVideoSources", soap);
+        return requestCommand(this.oxaddr, 'GetVideoSources', soap);
     }
 
-    getVideoSourceConfiguration(params: GetVideoSourceConfigurationParams): Promise<Command> {
+    getVideoSourceConfiguration(params: ConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetVideoSourceConfiguration>';
 		soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:GetVideoSourceConfiguration>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetVideoSourceConfiguration", soap);
+        return requestCommand(this.oxaddr, 'GetVideoSourceConfiguration', soap);
     }
 
 
     getVideoSourceConfigurations(): Promise<Command> {
         const soapBody = '<trt:GetVideoSourceConfigurations />';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetVideoSourceConfigurations", soap);
+        return requestCommand(this.oxaddr, 'GetVideoSourceConfigurations', soap);
     }
 
-    addVideoSourceConfiguration(params: AddVideoSourceConfigurationParams): Promise<Command> {
+    addVideoSourceConfiguration(params: ProfileAndConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:AddVideoSourceConfiguration>';
         soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
         soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:AddVideoSourceConfiguration>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "AddVideoSourceConfiguration", soap);
+        return requestCommand(this.oxaddr, 'AddVideoSourceConfiguration', soap);
     }
 
-    getCompatibleVideoSourceConfigurations(params: GetCompatibleVideoSourceConfigurationsParams): Promise<Command> {
+    getCompatibleVideoSourceConfigurations(params: ProfileTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetCompatibleVideoSourceConfigurations>';
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:GetCompatibleVideoSourceConfigurations>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetCompatibleVideoSourceConfigurations", soap);
+        return requestCommand(this.oxaddr, 'GetCompatibleVideoSourceConfigurations', soap);
     }
 
-    getVideoSourceConfigurationOptions(params: GetVideoSourceConfigurationOptionsParams): Promise<Command> {
+    getVideoSourceConfigurationOptions(params: ProfileAndConfigurationTokenOptionalParams): Promise<Command> {
         let soapBody = '';
         soapBody += '<trt:GetVideoSourceConfigurationOptions>';
         if (params.ProfileToken) {
@@ -163,44 +163,44 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         }
         soapBody += '</trt:GetVideoSourceConfigurationOptions>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetVideoSourceConfigurationOptions", soap);
+        return requestCommand(this.oxaddr, 'GetVideoSourceConfigurationOptions', soap);
     }
 
-    getMetadataConfiguration(params: GetMetadataConfigurationParams): Promise<Command> {
+    getMetadataConfiguration(params: ConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetMetadataConfiguration>';
 		soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:GetMetadataConfiguration>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetMetadataConfiguration", soap);
+        return requestCommand(this.oxaddr, 'GetMetadataConfiguration', soap);
     }
 
     getMetadataConfigurations(): Promise<Command> {
         const soapBody = '<trt:GetMetadataConfigurations />';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetMetadataConfigurations", soap);
+        return requestCommand(this.oxaddr, 'GetMetadataConfigurations', soap);
     }
 
-    addMetadataConfiguration(params: AddMetadataConfigurationParams): Promise<Command> {
+    addMetadataConfiguration(params: ProfileAndConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:AddMetadataConfiguration>';
         soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
         soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:AddMetadataConfiguration>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "AddMetadataConfiguration", soap);
+        return requestCommand(this.oxaddr, 'AddMetadataConfiguration', soap);
     }
 
-    getCompatibleMetadataConfigurations(params: GetCompatibleMetadataConfigurationsParams): Promise<Command> {
+    getCompatibleMetadataConfigurations(params: ProfileTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetCompatibleMetadataConfigurations>';
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:GetCompatibleMetadataConfigurations>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetCompatibleMetadataConfigurations", soap);
+        return requestCommand(this.oxaddr, 'GetCompatibleMetadataConfigurations', soap);
     }
 
-    getMetadataConfigurationOptions(params: GetMetadataConfigurationOptionsParams): Promise<Command> {
+    getMetadataConfigurationOptions(params: ProfileAndConfigurationTokenOptionalParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetMetadataConfigurationOptions>';
         if (params.ProfileToken) {
@@ -211,50 +211,50 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         }
 		soapBody += '</trt:GetMetadataConfigurationOptions>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetMetadataConfigurationOptions", soap);
+        return requestCommand(this.oxaddr, 'GetMetadataConfigurationOptions', soap);
     }
 
     getAudioSources(): Promise<Command> {
         const soapBody = '<trt:GetAudioSources />';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetAudioSources", soap);
+        return requestCommand(this.oxaddr, 'GetAudioSources', soap);
     }
 
-    getAudioSourceConfiguration(params: GetAudioSourceConfigurationParams): Promise<Command> {
+    getAudioSourceConfiguration(params: ConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetAudioSourceConfiguration>';
 		soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:GetAudioSourceConfiguration>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetAudioSourceConfiguration", soap);
+        return requestCommand(this.oxaddr, 'GetAudioSourceConfiguration', soap);
     }
 
     getAudioSourceConfigurations(): Promise<Command> {
         const soapBody = '<trt:GetAudioSourceConfigurations />';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetAudioSourceConfigurations", soap);
+        return requestCommand(this.oxaddr, 'GetAudioSourceConfigurations', soap);
     }
 
-    addAudioSourceConfiguration(params: AddAudioSourceConfigurationParams): Promise<Command> {
+    addAudioSourceConfiguration(params: ProfileAndConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:AddAudioSourceConfiguration>';
         soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
         soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:AddAudioSourceConfiguration>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "AddAudioSourceConfiguration", soap);
+        return requestCommand(this.oxaddr, 'AddAudioSourceConfiguration', soap);
     }
 
-    getCompatibleAudioSourceConfigurations(params: GetCompatibleAudioSourceConfigurationsParams): Promise<Command> {
+    getCompatibleAudioSourceConfigurations(params: ProfileTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetCompatibleAudioSourceConfigurations>';
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:GetCompatibleAudioSourceConfigurations>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetCompatibleAudioSourceConfigurations", soap);
+        return requestCommand(this.oxaddr, 'GetCompatibleAudioSourceConfigurations', soap);
     }
 
-    getAudioSourceConfigurationOptions(params: GetAudioSourceConfigurationOptionsParams): Promise<Command> {
+    getAudioSourceConfigurationOptions(params: ProfileAndConfigurationTokenOptionalParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetAudioSourceConfigurationOptions>';
         if (params.ProfileToken) {
@@ -265,44 +265,44 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         }
 		soapBody += '</trt:GetAudioSourceConfigurationOptions>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetAudioSourceConfigurationOptions", soap);
+        return requestCommand(this.oxaddr, 'GetAudioSourceConfigurationOptions', soap);
     }
 
-    getAudioEncoderConfiguration(params: GetAudioEncoderConfigurationParams): Promise<Command> {
+    getAudioEncoderConfiguration(params: ConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetAudioEncoderConfiguration>';
 		soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:GetAudioEncoderConfiguration>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetAudioEncoderConfiguration", soap);
+        return requestCommand(this.oxaddr, 'GetAudioEncoderConfiguration', soap);
     }
 
     getAudioEncoderConfigurations(): Promise<Command> {
         const soapBody = '<trt:GetAudioEncoderConfigurations />';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetAudioEncoderConfigurations", soap);
+        return requestCommand(this.oxaddr, 'GetAudioEncoderConfigurations', soap);
     }
 
-    addAudioEncoderConfiguration(params: AddAudioEncoderConfigurationParams): Promise<Command> {
+    addAudioEncoderConfiguration(params: ProfileAndConfigurationTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:AddAudioEncoderConfiguration>';
         soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
         soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:AddAudioEncoderConfiguration>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "AddAudioEncoderConfiguration", soap);
+        return requestCommand(this.oxaddr, 'AddAudioEncoderConfiguration', soap);
     }
 
-    getCompatibleAudioEncoderConfigurations(params: GetCompatibleAudioEncoderConfigurationsParams): Promise<Command> {
+    getCompatibleAudioEncoderConfigurations(params: ProfileTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetCompatibleAudioEncoderConfigurations>';
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:GetCompatibleAudioEncoderConfigurations>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetCompatibleAudioEncoderConfigurations", soap);
+        return requestCommand(this.oxaddr, 'GetCompatibleAudioEncoderConfigurations', soap);
     }
 
-    getAudioEncoderConfigurationOptions(params: GetAudioEncoderConfigurationOptionsParams): Promise<Command> {
+    getAudioEncoderConfigurationOptions(params: ProfileAndConfigurationTokenOptionalParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetAudioEncoderConfigurationOptions>';
         if (params.ProfileToken) {
@@ -313,34 +313,34 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         }
 		soapBody += '</trt:GetAudioEncoderConfigurationOptions>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetAudioEncoderConfigurationOptions", soap);
+        return requestCommand(this.oxaddr, 'GetAudioEncoderConfigurationOptions', soap);
     }
 
-    startMulticastStreaming(params: StartMulticastStreamingParams): Promise<Command> {
+    startMulticastStreaming(params: ProfileTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:StartMulticastStreaming>';
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:StartMulticastStreaming>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "StartMulticastStreaming", soap);
+        return requestCommand(this.oxaddr, 'StartMulticastStreaming', soap);
     }
 
-    stopMulticastStreaming(params: StopMulticastStreamingParams): Promise<Command> {
+    stopMulticastStreaming(params: ProfileTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:StopMulticastStreaming>';
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:StopMulticastStreaming>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "StopMulticastStreaming", soap);
+        return requestCommand(this.oxaddr, 'StopMulticastStreaming', soap);
     }
 
-    GetSnapshotUri(params: GetSnapshotUriParams): Promise<Command> {
+    GetSnapshotUri(params: ProfileTokenParams): Promise<Command> {
         let soapBody = '';
 		soapBody += '<trt:GetSnapshotUri>';
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:GetSnapshotUri>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetSnapshotUri", soap);
+        return requestCommand(this.oxaddr, 'GetSnapshotUri', soap);
     }
 }
 
@@ -348,21 +348,13 @@ export interface OnvifServiceMediaConfigs extends OnvifServiceBaseConfigs {
     timeDiff: number;
 }
 
-export interface GetVideoEncoderConfigurationParams {
+export interface ConfigurationTokenParams {
     ConfigurationToken: string;
 }
 
-export interface GetCompatibleVideoEncoderConfigurationsParams {
-    ConfigurationToken: string;
-}
-
-export interface GetVideoEncoderConfigurationOptionsParams {
+export interface ProfileAndConfigurationTokenOptionalParams {
     ProfileToken?: string;
     ConfigurationToken?: string;
-}
-
-export interface GetGuaranteedNumberOfVideoEncoderInstancesParams {
-    ConfigurationToken: string;
 }
 
 export interface GetStreamUriParams {
@@ -370,7 +362,7 @@ export interface GetStreamUriParams {
     Protocol: 'UDP' | 'HTTP' | 'RTSP';
 }
 
-export interface GetProfileParams {
+export interface ProfileTokenParams {
     ProfileToken: string;
 }
 
@@ -379,90 +371,7 @@ export interface CreateProfileParams {
     Token?: string;
 }
 
-export interface DeleteProfileParams {
-    ProfileToken: string;
-}
-
-export interface GetVideoSourceConfigurationParams {
-    ConfigurationToken: string;
-}
-
-export interface AddVideoSourceConfigurationParams {
+export interface ProfileAndConfigurationTokenParams {
     ProfileToken: string;
     ConfigurationToken: string;
-}
-
-export interface GetCompatibleVideoSourceConfigurationsParams {
-    ProfileToken: string;
-}
-
-export interface GetVideoSourceConfigurationOptionsParams {
-    ProfileToken?: string;
-    ConfigurationToken?: string;
-}
-
-export interface GetMetadataConfigurationParams {
-    ConfigurationToken: string;
-}
-
-export interface AddMetadataConfigurationParams {
-    ProfileToken: string;
-    ConfigurationToken: string;
-}
-
-export interface GetCompatibleMetadataConfigurationsParams {
-    ProfileToken: string;
-}
-
-export interface GetMetadataConfigurationOptionsParams {
-    ProfileToken?: string;
-    ConfigurationToken?: string;
-}
-
-export interface GetAudioSourceConfigurationParams {
-    ConfigurationToken: string;
-}
-
-export interface AddAudioSourceConfigurationParams {
-    ProfileToken: string;
-    ConfigurationToken: string;
-}
-
-export interface GetCompatibleAudioSourceConfigurationsParams {
-    ProfileToken: string;
-}
-
-export interface GetAudioSourceConfigurationOptionsParams {
-    ProfileToken?: string;
-    ConfigurationToken?: string;
-}
-
-export interface GetAudioEncoderConfigurationParams {
-    ConfigurationToken: string;
-}
-
-export interface AddAudioEncoderConfigurationParams {
-    ProfileToken: string;
-    ConfigurationToken: string;
-}
-
-export interface GetCompatibleAudioEncoderConfigurationsParams {
-    ProfileToken: string;
-}
-
-export interface GetAudioEncoderConfigurationOptionsParams {
-    ProfileToken?: string;
-    ConfigurationToken?: string;
-}
-
-export interface StartMulticastStreamingParams {
-    ProfileToken: string;
-}
-
-export interface StopMulticastStreamingParams {
-    ProfileToken: string;
-}
-
-export interface GetSnapshotUriParams {
-    ProfileToken: string;
 }

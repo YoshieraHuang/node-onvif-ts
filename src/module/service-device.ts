@@ -229,7 +229,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
 		}
         soapBody += '</tds:SetSystemDateAndTime>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "SetSystemDateAndTime", soap);
+        return requestCommand(this.oxaddr, 'SetSystemDateAndTime', soap);
     }
 
     reboot(): Promise<Command> {
@@ -309,14 +309,14 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         soapBody += `<tds:FromDHCP>${params.FromDHCP}</tds:FromDHCP>`;
         if (params.NTPManual) {
             const manual = params.NTPManual;
-            soapBody += `<tds:NTPManual>`;
+            soapBody += '<tds:NTPManual>';
             soapBody += `<tt:Type>${manual.Type}</tt:Type>`;
             if (manual.Type === 'IPv4') {
                 soapBody += `<tt:IPv4Address>${manual.IPv4Address}</tt:IPv4Address>`;
             } else {
                 soapBody += `<tt:IPv6Address>${manual.IPv6Address}</tt:IPv6Address>`;
             }
-            soapBody += `</tds:NTPManual>`;
+            soapBody += '</tds:NTPManual>';
         }
         soapBody += '</tds:SetNTP>';
         const soap = this.createRequestSoap(soapBody);
@@ -361,7 +361,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
 		soapBody += '</tds:IPAddressFilter>';
 		soapBody += '</tds:SetIPAddressFilter>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "SetIPAddressFilter", soap);
+        return requestCommand(this.oxaddr, 'SetIPAddressFilter', soap);
     }
 
     getService(params: {IncludeCapability: boolean}): Promise<Command> {
@@ -370,7 +370,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
 		soapBody += '<tds:IncludeCapability>' + params.IncludeCapability + '</tds:IncludeCapability>';
 		soapBody += '</tds:GetServices>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, "GetServices", soap);
+        return requestCommand(this.oxaddr, 'GetServices', soap);
     }
 
     getServiceCapabilities(): Promise<Command> {
