@@ -1,5 +1,6 @@
 import { OnvifServiceBase, OnvifServiceBaseConfigs } from './service-base';
 import { Command, requestCommand } from './soap';
+import { ConfigurationTokenParams, ProfileTokenParams } from './service-media';
 
 export class OnvifServicePtz extends OnvifServiceBase {
     constructor(configs: OnvifServicePtzConfigs) {
@@ -208,10 +209,6 @@ export interface NodeTokenParams {
     NodeToken: string;
 }
 
-export interface ConfigurationTokenParams {
-    ConfigurationToken: string;
-}
-
 export interface ContinuousMoveParams {
     ProfileToken: string;
     Velocity: {x: number, y: number, z: number};
@@ -244,10 +241,6 @@ export interface GotoHomePositionParams {
 export type SetPresetParams = { ProfileToken: string } & (
     { PresetToken: string} | { PresetName: string}
 );
-
-export interface ProfileTokenParams {
-    ProfileToken: string;
-}
 
 export interface GotoPresetParams {
     ProfileToken: string;
