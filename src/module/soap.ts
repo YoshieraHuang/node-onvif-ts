@@ -2,15 +2,16 @@ import { parseStringPromise } from 'xml2js';
 import * as mHttp from 'http';
 import {createHash} from 'crypto';
 import * as mHtml from 'html';
+import { UrlWithStringQuery } from 'url';
 
-interface Oxaddr {
-    protocol: string | null;
-    hostname?: string | null;
-    port?: number | string | null;
-    path?: string | null;
-}
+// interface Oxaddr {
+//     protocol: string | null;
+//     hostname?: string | null;
+//     port?: number | string | null;
+//     pathname?: string | null;
+// }
 
-export interface Command {
+export interface Result {
     soap: string;
     formatted: string;
     converted: any;
@@ -34,8 +35,8 @@ export function parse(soap: string) {
     });
 }
 
-export function requestCommand(oxaddr: Oxaddr, methodName: string, soap: string) {
-    return new Promise<Command>((resolve, reject) => {
+export function requestCommand(oxaddr: UrlWithStringQuery, methodName: string, soap: string) {
+    return new Promise<Result>((resolve, reject) => {
         let xml = '';
         request(oxaddr, soap).then((res) => {
             xml = res;
@@ -48,7 +49,7 @@ export function requestCommand(oxaddr: Oxaddr, methodName: string, soap: string)
                 const parsed = parseResponseResult(methodName, result);
                 if(parsed) {
                     resolve({
-                        soap     : xml,
+                        soap: xml,
                         formatted: mHtml.prettyPrint(xml, {indent_size: 2}),
                         converted: result,
                         data: parsed
@@ -92,14 +93,14 @@ export function createRequestSoap(params: SoapParams) {
         return soap;
     }
 
-function request(oxaddr: Oxaddr, soap: string): Promise<string> {
+function request(oxaddr: UrlWithStringQuery, soap: string): Promise<string> {
         return new Promise((resolve, reject) => {
             let req = mHttp.request(
                 {
                     protocol: oxaddr.protocol,
                     hostname: oxaddr.hostname,
                     port: oxaddr.port || 80,
-                    path: oxaddr.path,
+                    path: oxaddr.pathname,
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/soap+xml; charset=utf-8;',
@@ -209,7 +210,7 @@ function createSoapUserToken(diff: number, user: string, pass: string) {
         const nonceBase64 = nonceBuffer.toString('base64');
         const shasum = createHash('sha1');
 
-        shasum.update(Buffer.concat([nonceBuffer, new Buffer(date), new Buffer(pass)]));
+        shasum.update(Buffer.concat([nonceBuffer, Buffer.from(date), Buffer.from(pass)]));
         const digest = shasum.digest('base64');
         return `<Security s:mustUnderstand="1" xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
             <UsernameToken>
@@ -222,77 +223,9 @@ function createSoapUserToken(diff: number, user: string, pass: string) {
     }
 
 function createNonce(digit: number) {
-    const nonce = new Buffer(digit);
+    const nonce = Buffer.alloc(digit);
     for(let i = 0; i < digit; i++) {
         nonce.writeUInt8(Math.floor(Math.random() * 256), i);
     }
     return nonce;
-}
-
-    function getTypeOfValue(value: any) {
-        if (value === undefined) {
-            return 'undefined';
-        }
-
-        if (value === null) {
-            return 'null';
-        }
-
-        if (Array.isArray(value)) {
-            return 'array';
-        }
-
-        const t = typeof(value);
-        if (t === 'boolean') {
-            return t;
-        }
-
-        if (t === 'string') {
-            return t;
-        }
-
-        if (t === 'number') {
-            if (value % 1 === 0) {
-                return 'integer';
-            }
-
-            return 'float';
-        }
-
-        if (t === 'object') {
-            if (Object.toString.call(value) === '[object Object]') {
-                return 'object';
-            }
-        }
-
-        return 'unknown';
-    }
-
-export function isInvalidValue(value: any, type: string, allowEmpty: boolean = false): string {
-    const vt = getTypeOfValue(value);
-    if (type === 'float') {
-        if(!vt.match(/^(float|integer)$/)) {
-            return 'The type of the value must be "' + type + '".';
-        }
-    } else {
-        if(vt !== type) {
-            return 'The type of the value must be "' + type + '".';
-        }
-    }
-
-    if(!allowEmpty) {
-        if(vt === 'array' && value.length === 0) {
-            return 'The value must not be an empty array.';
-        } else if(vt === 'string' && value === '') {
-            return 'The value must not be an empty string.';
-        }
-    }
-    if(typeof(value) === 'string') {
-        if(value.match(/[^\x20-\x7e]/)) {
-            return 'The value must consist of ascii characters.';
-        }
-        if(value.match(/[\<\>]/)) {
-            return 'Invalid characters were found in the value ("<", ">")';
-        }
-    }
 }

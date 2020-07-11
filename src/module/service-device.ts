@@ -1,5 +1,4 @@
-import { parse, UrlWithStringQuery } from 'url';
-import { requestCommand, Command } from './soap';
+import { requestCommand, Result } from './soap';
 import { OnvifServiceBase, OnvifServiceBaseConfigs } from './service-base';
 
 export class OnvifServiceDevice extends OnvifServiceBase{
@@ -15,7 +14,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return this.timeDiff;
     }
 
-    getCapabilities(): Promise<Command> {
+    getCapabilities(): Promise<Result> {
         let soapBody = '';
         soapBody += '<tds:GetCapabilities>';
         soapBody += '  <tds:Category>All</tds:Category>';
@@ -24,25 +23,25 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'GetCapabilities', soap);
     }
 
-    getWsdlUrl(): Promise<Command> {
+    getWsdlUrl(): Promise<Result> {
         const soapBody = '<tds:GetWsdlUrl/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetWsdlUrl', soap);
     }
 
-    getDiscoveryMode(): Promise<Command> {
+    getDiscoveryMode(): Promise<Result> {
         const soapBody = '<tds:GetDiscoveryMode/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetDiscoveryMode', soap);
     }
 
-    getScopes(): Promise<Command> {
+    getScopes(): Promise<Result> {
         const soapBody = '<tds:GetScopes/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetScopes', soap);
     }
 
-    setScopes(params: {Scopes: string[]}): Promise<Command> {
+    setScopes(params: {Scopes: string[]}): Promise<Result> {
         let soapBody = '<tds:SetScopes>';
         params.Scopes.forEach((s) => {
             soapBody += '<tds:Scopes>' + s + '</tds:Scopes>';
@@ -52,7 +51,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'SetScopes', soap);
     }
 
-    addScopes(params: {Scopes: string[]}): Promise<Command> {
+    addScopes(params: {Scopes: string[]}): Promise<Result> {
         let soapBody = '<tds:AddScopes>';
         params.Scopes.forEach((s) => {
             soapBody += '<tds:ScopeItem>' + s + '</tds:ScopeItem>';
@@ -62,13 +61,13 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'AddScopes', soap);
     }
 
-    getHostname(): Promise<Command> {
+    getHostname(): Promise<Result> {
         const soapBody = '<tds:GetHostname/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetHostname', soap);
     }
 
-    setHostname(params: {Name: string}): Promise<Command> {
+    setHostname(params: {Name: string}): Promise<Result> {
         let soapBody = '<tds:SetHostname>';
         soapBody += '<tds:Name>' + params.Name + '</tds:Name>';
         soapBody += '</tds:SetHostname>';
@@ -76,7 +75,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'SetHostname', soap);
     }
 
-    getDNS(): Promise<Command> {
+    getDNS(): Promise<Result> {
         const soapBody = '<tds:GetDNS/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetDNS', soap).then((result) => {
@@ -95,7 +94,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         });
     }
 
-    setDNS(params: SetDNSParams): Promise<Command> {
+    setDNS(params: SetDNSParams): Promise<Result> {
         let soapBody = '<tds:SetDNS>';
         if (params.FromDHCP) {
             soapBody += `<tds:FromDHCP>${params.FromDHCP}</tds:FromDHCP>`;
@@ -125,19 +124,19 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'SetDNS', soap);
     }
 
-    getNetworkInterfaces(): Promise<Command> {
+    getNetworkInterfaces(): Promise<Result> {
         const soapBody = '<tds:GetNetworkInterfaces/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetNetworkInterfaces', soap);
     }
 
-    getNetworkProtocols(): Promise<Command> {
+    getNetworkProtocols(): Promise<Result> {
         const soapBody = '<tds:GetNetworkProtocols/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetNetworkProtocols', soap);
     }
 
-    setNetworkProtocols(params: SetNetworkProtocolsParams): Promise<Command> {
+    setNetworkProtocols(params: SetNetworkProtocolsParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tds:SetNetworkProtocols>';
 		params.NetworkProtocols.forEach((o) => {
@@ -159,13 +158,13 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'SetNetworkProtocols', soap);
     }
 
-    getNetworkDefaultGateway(): Promise<Command> {
+    getNetworkDefaultGateway(): Promise<Result> {
         const soapBody = '<tds:GetNetworkDefaultGateway/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetNetworkDefaultGateway', soap);
     }
 
-    setNetworkDefaultGateway(params: SetNetworkDefaultGatewayParams): Promise<Command> {
+    setNetworkDefaultGateway(params: SetNetworkDefaultGatewayParams): Promise<Result> {
         let soapBody = '<tds:SetNetworkDefaultGateway>';
         params.NetworkGateway.forEach((o) => {
             if('IPv4Address' in o) {
@@ -179,13 +178,13 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'SetNetworkDefaultGateway', soap);
     }
 
-    getDeviceInformation(): Promise<Command> {
+    getDeviceInformation(): Promise<Result> {
         const soapBody = '<tds:GetDeviceInformation/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetDeviceInformation', soap);
     }
 
-    getSystemDateAndTime(): Promise<Command> {
+    getSystemDateAndTime(): Promise<Result> {
         const soapBody = '<tds:GetSystemDateAndTime/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetSystemDateAndTime', soap).then((result) => {
@@ -199,7 +198,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         });
     }
 
-    setSystemDateAndTime(params: SetSystemDateAndTimeParams): Promise<Command> {
+    setSystemDateAndTime(params: SetSystemDateAndTimeParams): Promise<Result> {
         if (!params.TimeZone.match(/^[A-Z]{3}\-?\d{1,2}([A-Z]{3,4})?$/)) {
             return Promise.reject(new Error('The "TimeZone" property must be a string representing a time zone which is defined in POSIX 1003.1.'));
         }
@@ -232,13 +231,13 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'SetSystemDateAndTime', soap);
     }
 
-    reboot(): Promise<Command> {
+    reboot(): Promise<Result> {
         const soapBody = '<tds:SytemReboot/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'SystemReboot', soap);
     }
 
-    getUsers(): Promise<Command> {
+    getUsers(): Promise<Result> {
         const soapBody = '<tds:GetUsers/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetUsers', soap).then((result) => {
@@ -250,7 +249,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         });
     }
 
-    createUser(params: CreateUserParams): Promise<Command> {
+    createUser(params: CreateUserParams): Promise<Result> {
         let soapBody = '<tds:CreateUsers>';
         params.User.forEach((u) => {
             soapBody += '<tds:User>';
@@ -264,7 +263,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'CreateUsers', soap);
     }
 
-    deleteUser(params: DeleteUserParams): Promise<Command> {
+    deleteUser(params: DeleteUserParams): Promise<Result> {
         let soapBody = '<tds:DeleteUsers>';
         params.User.forEach((u) => {
 			soapBody += `<tt:Username>${u.Username}</tt:Username>`;
@@ -274,7 +273,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'DeleteUsers', soap);
     }
 
-    setUser(params: SetUserParams): Promise<Command> {
+    setUser(params: SetUserParams): Promise<Result> {
         let soapBody = '<tds:SetUsers>';
         params.User.forEach((u) => {
             soapBody += '<tds:User>';
@@ -292,19 +291,19 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'SetUsers', soap);
     }
 
-    getRelayOutputs(): Promise<Command> {
+    getRelayOutputs(): Promise<Result> {
         const soapBody = '<tds:GetRelayOutputs/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetRelayOutputs', soap);
     }
 
-    getNTP(): Promise<Command> {
+    getNTP(): Promise<Result> {
         const soapBody = '<tds:GetNTP/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetNTP', soap);
     }
 
-    setNTP(params: SetNTPParams): Promise<Command> {
+    setNTP(params: SetNTPParams): Promise<Result> {
         let soapBody = '<tds:SetNTP>';
         soapBody += `<tds:FromDHCP>${params.FromDHCP}</tds:FromDHCP>`;
         if (params.NTPManual) {
@@ -323,25 +322,25 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'SetNTP', soap);
     }
 
-    getDynamicDNS(): Promise<Command> {
+    getDynamicDNS(): Promise<Result> {
         const soapBody = '<tds:GetDynamicDNS/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetDynamicDNS', soap);
     }
 
-    getZeroConfiguration(): Promise<Command> {
+    getZeroConfiguration(): Promise<Result> {
         const soapBody = '<tds:GetZeroConfiguration/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetZeroConfiguration', soap);
     }
 
-    getIPAddressFilter(): Promise<Command> {
+    getIPAddressFilter(): Promise<Result> {
         const soapBody = '<tds:GetIPAddressFilter/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetIPAddressFilter', soap);
     }
 
-    setIPAddressFilter(params: SetIPAddressFilterParams): Promise<Command> {
+    setIPAddressFilter(params: SetIPAddressFilterParams): Promise<Result> {
         params.IPv4Address.forEach((e) => {
             if (!e.Address.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)) {
                 return Promise.reject(new Error('The "Address" property was invalid as a IPv4 address.'));
@@ -364,7 +363,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'SetIPAddressFilter', soap);
     }
 
-    getService(params: {IncludeCapability: boolean}): Promise<Command> {
+    getService(params: {IncludeCapability: boolean}): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tds:GetServices>';
 		soapBody += '<tds:IncludeCapability>' + params.IncludeCapability + '</tds:IncludeCapability>';
@@ -373,7 +372,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'GetServices', soap);
     }
 
-    getServiceCapabilities(): Promise<Command> {
+    getServiceCapabilities(): Promise<Result> {
         const soapBody = '<tds:GetServiceCapabilities/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetServiceCapabilities', soap);

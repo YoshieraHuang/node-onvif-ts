@@ -7,10 +7,19 @@ import { parse, UrlWithStringQuery, format } from 'url';
 import { OnvifServiceDevice } from './service-device';
 import { OnvifHttpAuth } from './http-auth';
 import { IncomingHttpHeaders } from 'http';
-import { Command } from './soap';
+import { Result } from './soap';
+
+export interface Information {
+    Manufacturer: string;
+    Model: string;
+    FirmwareVersion: string;
+    SerialNumber: string;
+    HardwareId: string;
+}
 
 export class OnvifDevice extends EventEmitter{
-    private address = '';
+    address = '';
+    services: Services;
     private xaddr = '';
     private user = '';
     private pass = '';
@@ -18,8 +27,7 @@ export class OnvifDevice extends EventEmitter{
     private keepAddr = false;
     private lastResponse: any = null; // for debug
     private timeDiff = 0;
-    private information: any = null;
-    private services: Services;
+    private information: Information = null;
     private profileList: Profile[] = [];
     private currentProfile: Profile | null = null;
     private ptzMoving = false;
@@ -228,7 +236,7 @@ export class OnvifDevice extends EventEmitter{
     }
 
     private async getCapabilities() {
-        let res: Command;
+        let res: Result;
         try {
             res = await this.services.device.getCapabilities();
         } catch (e) {
@@ -275,7 +283,7 @@ export class OnvifDevice extends EventEmitter{
     private async getDeviceInformation() {
         try {
             const res = await this.services.device.getDeviceInformation();
-            this.information = res.data?.GetDeviceInformationResponse;
+            this.information = res.data?.GetDeviceInformationResponse as Information;
         } catch (e) {
             throw new Error('Failed to initialize the device: ' + e.toString());
         }
@@ -285,7 +293,7 @@ export class OnvifDevice extends EventEmitter{
         try {
             const res = await this.services.media.getProfiles();
             this.lastResponse = res;
-            const rawProfiles = res.data?.GetProfileResponse?.Profiles as any[] | any;
+            const rawProfiles = res.data?.GetProfilesResponse?.Profiles as any[] | any;
             if (!rawProfiles) {
                 throw new Error('Failed to initialize the device: The targeted device does not any media profiles.');
             }
@@ -294,19 +302,55 @@ export class OnvifDevice extends EventEmitter{
                 const profile: Profile = {
 					token: p.$?.token || '',
                     name: p.Name || '',
+                    snapshot: '',
+                    video: {
+                        source: null,
+                        encoder: null,
+                    },
+                    audio: {
+                        source: null,
+                        encoder: null,
+                    },
+                    stream: {
+                        udp: '',
+                        http: '',
+                        rtsp: '',
+                    },
+                    ptz: {
+                        range: {
+                            x: {min: 0, max: 0},
+                            y: {min: 0, max: 0},
+                            z: {min: 0, max: 0},
+                        }
+                    }
                 };
 
                 if (p.VideoSourceConfiguration) {
-                    profile.video.source = {
+                    profile.video.source ={
                         token: p.VideoSourceConfiguration.$?.token || '',
                         name: p.VideoSourceConfiguration.Name || '',
                         bounds: {
-							width: parseInt(p.VideoSourceConfiguration.Bounds.$.width, 10),
-							height: parseInt(p.VideoSourceConfiguration.Bounds.$.height, 10),
-							x: parseInt(p.VideoSourceConfiguration.Bounds.$.x, 10),
-							y: parseInt(p.VideoSourceConfiguration.Bounds.$.y, 10)
+                            width: parseInt(p.VideoSourceConfiguration.Bounds.$.width, 10),
+                            height: parseInt(p.VideoSourceConfiguration.Bounds.$.height, 10),
+                            x: parseInt(p.VideoSourceConfiguration.Bounds.$.x, 10),
+                            y: parseInt(p.VideoSourceConfiguration.Bounds.$.y, 10)
                         }
                     };
+                }
+
+                if (p.VideoEncoderConfiguration) {
+					profile.video.encoder = {
+						token: p.VideoEncoderConfiguration.$?.token,
+						name: p.VideoEncoderConfiguration.Name,
+						resolution: {
+							width: parseInt(p.VideoEncoderConfiguration.Resolution.Width, 10),
+							height: parseInt(p.VideoEncoderConfiguration.Resolution.Height, 10),
+						},
+						quality: parseInt(p.VideoEncoderConfiguration.Quality, 10),
+						framerate: parseInt(p.VideoEncoderConfiguration.RateControl.FrameRateLimit, 10),
+						bitrate: parseInt(p.VideoEncoderConfiguration.RateControl.BitrateLimit, 10),
+						encoding: p.VideoEncoderConfiguration.Encoding
+					};
                 }
 
                 if (p.AudioSourceConfiguration) {
@@ -407,7 +451,7 @@ export class OnvifDevice extends EventEmitter{
                 const params = { ProfileToken: profile.token};
                 const result = await this.services.media.GetSnapshotUri(params);
                 this.lastResponse = result;
-                let snapshotUri = result.data.GetSnaphostUriResponse.MediaUri.Uri;
+                let snapshotUri = result.data.GetSnapshotUriResponse.MediaUri.Uri;
                 snapshotUri = this.getSnapshotUri(snapshotUri);
                 this.profileList[index].snapshot = snapshotUri;
             } catch (e) {
@@ -477,11 +521,11 @@ export type OnvifDeviceConfigs = ({ xaddr: string} | {address: string}) & {
 export interface Profile {
     name: string;
     token: string;
-    stream?: { udp?: string, http?: string, rtsp?: string };
-    snapshot?: string;
-    video?: {source: VideoSource, encoder: VideoEncoder};
-    audio?: {source: AudioSource, encoder: AudioEncoder};
-    ptz?: { range : {
+    stream: { udp: string, http: string, rtsp: string };
+    snapshot: string;
+    video: {source: VideoSource, encoder: VideoEncoder};
+    audio: {source: AudioSource, encoder: AudioEncoder};
+    ptz: { range : {
         x: {min: number, max: number},
         y: {min: number, max: number},
         z: {min: number, max: number},

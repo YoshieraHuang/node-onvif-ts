@@ -96,8 +96,8 @@ export class OnvifHttpAuth {
     }
 
     private createCnonce(digit: number) {
-        const nonce = new Buffer(digit);
-        Array(digit).forEach((_, i) => {
+        const nonce = Buffer.alloc(digit);
+        Array(digit).fill(0).forEach((_, i) => {
             nonce.writeUInt8(Math.floor(Math.random() * 256), i);
         });
         return nonce.toString('hex');

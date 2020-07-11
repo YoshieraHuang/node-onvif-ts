@@ -1,5 +1,5 @@
 import { OnvifServiceBase, OnvifServiceBaseConfigs } from './service-base';
-import { Command, requestCommand } from './soap';
+import { Result, requestCommand } from './soap';
 import { ConfigurationTokenParams, ProfileTokenParams } from './service-media';
 
 export class OnvifServicePtz extends OnvifServiceBase {
@@ -16,13 +16,13 @@ export class OnvifServicePtz extends OnvifServiceBase {
         ];
     }
 
-    getNodes(): Promise<Command> {
+    getNodes(): Promise<Result> {
         const soapBody = '<tptz:GetNodes />';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetNodes', soap);
     }
 
-    getNode(params: NodeTokenParams): Promise<Command> {
+    getNode(params: NodeTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tptz:GetNode>';
 		soapBody +=   '<tptz:NodeToken>' + params.NodeToken + '</tptz:NodeToken>';
@@ -31,13 +31,13 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetNode', soap);
     }
 
-    getConfigurations(): Promise<Command> {
+    getConfigurations(): Promise<Result> {
         const soapBody = '<tptz:GetConfigurations />';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetConfigurations', soap);
     }
 
-    getConfiguration(params: ConfigurationTokenParams): Promise<Command> {
+    getConfiguration(params: ConfigurationTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tptz:GetConfiguration>';
 		soapBody +=   '<tptz:ConfigurationToken>' + params.ConfigurationToken + '</tptz:ConfigurationToken>';
@@ -46,7 +46,7 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetConfigurations', soap);
     }
 
-    getStatus(): Promise<Command> {
+    getStatus(): Promise<Result> {
         const soapBody = '<tptz:GetStatus />';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetStatus', soap);
@@ -114,7 +114,7 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'RelativeMove', soap);
     }
 
-    stop(params: StopParams): Promise<Command> {
+    stop(params: StopParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tptz:Stop>';
 		soapBody +=   '<tptz:ProfileToken>' + params.ProfileToken + '</tptz:ProfileToken>';
@@ -129,7 +129,7 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'Stop', soap);
     }
 
-    gotoHomePosition(params: GotoHomePositionParams): Promise<Command> {
+    gotoHomePosition(params: GotoHomePositionParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tptz:GotoHomePosition>';
 		soapBody +=   '<tptz:ProfileToken>' + params.ProfileToken + '</tptz:ProfileToken>';
@@ -141,7 +141,7 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GotoHomePosition', soap);
     }
 
-    setHomePosition(params: ProfileTokenParams): Promise<Command> {
+    setHomePosition(params: ProfileTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tptz:SetHomePosition>';
 		soapBody +=   '<tptz:ProfileToken>' + params.ProfileToken + '</tptz:ProfileToken>';
@@ -150,7 +150,7 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'SetHomePosition', soap);
     }
 
-    setPreset(params: SetPresetParams): Promise<Command> {
+    setPreset(params: SetPresetParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tptz:SetPreset>';
 		soapBody +=   '<tptz:ProfileToken>' + params.ProfileToken + '</tptz:ProfileToken>';
@@ -165,7 +165,7 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'SetPreset', soap);
     }
 
-    getPresets(params: ProfileTokenParams): Promise<Command> {
+    getPresets(params: ProfileTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tptz:GetPresets>';
 		soapBody +=   '<tptz:ProfileToken>' + params.ProfileToken + '</tptz:ProfileToken>';
@@ -174,7 +174,7 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetPresets', soap);
     }
 
-    gotoPreset(params: GotoPresetParams): Promise<Command> {
+    gotoPreset(params: GotoPresetParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tptz:GotoPreset>';
 		soapBody +=   '<tptz:ProfileToken>' + params.ProfileToken + '</tptz:ProfileToken>';
@@ -190,7 +190,7 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GotoPreset', soap);
     }
 
-    removePreset(params: RemovePresetParams): Promise<Command> {
+    removePreset(params: RemovePresetParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tptz:RemovePreset>';
 		soapBody +=   '<tptz:ProfileToken>' + params.ProfileToken + '</tptz:ProfileToken>';
