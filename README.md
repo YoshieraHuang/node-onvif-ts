@@ -7,6 +7,16 @@ Typescript version of [node-onvif](https://github.com/futomi/node-onvif). The st
  - move javascript to typescript
  - remove the callback support for async function. Async functions now all return a `Promise` object.
 
+# Usage
+
+```shell
+# npm
+npm i -s node-onvif-ts
+
+# yarn
+yarn add node-onvif-ts
+```
+
 # Examples
 
 ## Discover ONVIF network cameras

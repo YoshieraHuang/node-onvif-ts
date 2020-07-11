@@ -1,6 +1,6 @@
 {
   "name": "node-onvif-ts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "typescript version of node-onvif",
   "main": "dist/node-onvif/index.js",
   "scripts": {
