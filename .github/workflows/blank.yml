@@ -29,8 +29,8 @@ jobs:
         node-version: '12.x'
         # Optional registry to set up for auth. Will set the registry in a project level .npmrc and .yarnrc file, and set up auth to read in from env.NODE_AUTH_TOKEN
         registry-url: 'https://registry.npmjs.org'
-    - run: npm install
-    - run: npm run build
-    - run: npm publish --access public
+    - run: yarn install
+    - run: yarn build
+    - run: yarn publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
