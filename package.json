@@ -1,8 +1,11 @@
 {
   "name": "node-onvif-ts",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "typescript version of node-onvif",
   "main": "dist/node-onvif/index.js",
+  "files": [
+    "dist/node-onvif/**/*"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
