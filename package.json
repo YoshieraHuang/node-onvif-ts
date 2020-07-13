@@ -2,6 +2,10 @@
   "name": "node-onvif-ts",
   "version": "0.1.2",
   "description": "typescript version of node-onvif",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YoshieraHuang/node-onvif-ts"
+  },
   "main": "dist/node-onvif/index.js",
   "files": [
     "dist/node-onvif/**/*"
@@ -21,7 +25,6 @@
   },
   "types": "dist/node-onvif/index.d.ts",
   "dependencies": {
-    "dgram": "^1.0.1",
     "html": "^1.0.0",
     "xml2js": "^0.4.23"
   }
