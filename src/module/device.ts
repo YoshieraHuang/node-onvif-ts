@@ -228,7 +228,7 @@ export class OnvifDevice extends EventEmitter{
 
     private async getSystemDateAndTime(): Promise<void> {
         try {
-            const res = await this.services.device?.getSystemDateAndTime();
+            await this.services.device.getSystemDateAndTime();
             this.timeDiff = this.services.device.getTimeDiff();
         } catch (e) {
             return;

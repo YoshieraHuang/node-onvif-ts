@@ -203,24 +203,24 @@ function parseResponseResult(methodName: string, res: any) {
     }
 
 function createSoapUserToken(diff: number, user: string, pass: string) {
-        if (!diff) { diff = 0;}
-        if (!pass) { pass = '';}
-        const date = (new Date(Date.now() + diff)).toISOString();
-        const nonceBuffer = createNonce(16);
-        const nonceBase64 = nonceBuffer.toString('base64');
-        const shasum = createHash('sha1');
+    if (!diff) { diff = 0;}
+    if (!pass) { pass = '';}
+    const date = (new Date(Date.now() + diff)).toISOString();
+    const nonceBuffer = createNonce(16);
+    const nonceBase64 = nonceBuffer.toString('base64');
+    const shasum = createHash('sha1');
 
-        shasum.update(Buffer.concat([nonceBuffer, Buffer.from(date), Buffer.from(pass)]));
-        const digest = shasum.digest('base64');
-        return `<Security s:mustUnderstand="1" xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-            <UsernameToken>
-                <Username>${user}</Username>
-                <Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">${digest}</Password>
-                <Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">${nonceBase64}</Nonce>
-                <Created xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">${date}</Created>
-            </UsernameToken>
-        </Security>`;
-    }
+    shasum.update(Buffer.concat([nonceBuffer, Buffer.from(date), Buffer.from(pass)]));
+    const digest = shasum.digest('base64');
+    return `<Security s:mustUnderstand="1" xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+        <UsernameToken>
+            <Username>${user}</Username>
+            <Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">${digest}</Password>
+            <Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">${nonceBase64}</Nonce>
+            <Created xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">${date}</Created>
+        </UsernameToken>
+    </Security>`;
+}
 
 function createNonce(digit: number) {
     const nonce = Buffer.alloc(digit);
