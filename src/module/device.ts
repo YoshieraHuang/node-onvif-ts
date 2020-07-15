@@ -1,9 +1,8 @@
 import { EventEmitter } from 'events';
-import { } from 'util';
 import { OnvifServiceEvents } from './service-events';
 import { OnvifServiceMedia } from './service-media';
 import { OnvifServicePtz, ContinuousMoveParams, StopParams } from './service-ptz';
-import { parse, UrlWithStringQuery, format } from 'url';
+import { parse, UrlWithStringQuery, format, UrlObject } from 'url';
 import { OnvifServiceDevice } from './service-device';
 import { OnvifHttpAuth } from './http-auth';
 import { IncomingHttpHeaders } from 'http';
@@ -467,7 +466,8 @@ export class OnvifDevice extends EventEmitter{
         }
 
         const path = parse(directXaddr).path;
-        return 'http://' + this.address + path;
+        const xaddr = 'http://' + this.address + path;
+        return xaddr;
     }
 
     private getUri(directUri: string | {'_': string}) {
@@ -477,13 +477,14 @@ export class OnvifDevice extends EventEmitter{
         } else if (typeof(directUri) === 'string') {
             directuri = directUri;
         }
-
         if (!this.keepAddr) return directuri;
         const base = parse('http://' + this.address);
         const parts = parse(directuri);
         const newParts = {
             host: base.host,
-            pathname: base.pathname + parts.pathname
+            pathname: base.pathname === '/' ? parts.pathname : base.pathname + parts.pathname,
+            search: parts.search,
+            port: base.port,
         };
         return format(newParts);
     }
@@ -495,16 +496,18 @@ export class OnvifDevice extends EventEmitter{
         } else if (typeof(directUri) === 'string') {
             directuri = directUri;
         }
-
         if (!this.keepAddr) return directuri;
         const base = parse('http://' + this.address);
         const parts = parse(directuri);
-        const newParts = {
+        const newParts: UrlObject = {
             protocol: parts.protocol,
             host: base.host,
-            pathname: base.pathname + parts.pathname
+            pathname: base.pathname === '/' ? parts.pathname : base.pathname + parts.pathname,
+            search: parts.search,
+            port: base.port,
         };
-        return format(newParts);
+        const newUri = format(newParts);
+        return newUri;
     }
 }
 

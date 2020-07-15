@@ -27,6 +27,7 @@ export class OnvifHttpAuth {
             this.path = options.path;
         }
 
+        console.log(options);
         return http.request(options, (res) => {
             if(res.statusCode === 401 && res.headers['www-authenticate']) {
                 if(res.headers['www-authenticate'].match(/Digest realm/)) {
