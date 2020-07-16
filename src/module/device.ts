@@ -436,6 +436,7 @@ export class OnvifDevice extends EventEmitter{
                     console.log(e);
                 }
             }
+            ++index;
         }
     }
 
