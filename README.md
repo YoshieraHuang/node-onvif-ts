@@ -123,7 +123,6 @@ let device = new OnvifDevice({
 device.init().then(() => {
   // Get the UDP stream URL
   let url = device.getUdpStreamUrl();
-  console.log(url);
 }).catch((error) => {
   console.error(error);
 });
