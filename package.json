@@ -1,6 +1,6 @@
 {
   "name": "node-onvif-ts",
-  "version": "0.1.6-1",
+  "version": "0.1.7",
   "description": "typescript version of node-onvif",
   "repository": {
     "type": "git",
