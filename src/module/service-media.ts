@@ -43,6 +43,16 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetVideoEncoderConfiguration', soap);
     }
 
+    addVideoEncoderConfiguration(params: ProfileAndConfigurationTokenParams): Promise<Result> {
+        let soapBody = '';
+		soapBody += '<trt:AddVideoEncoderConfiguration>';
+		soapBody +=   '<trt:ProfileToken>' + params['ProfileToken'] + '</trt:ProfileToken>';
+		soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
+		soapBody += '</trt:AddVideoEncoderConfiguration>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'AddVideoEncoderConfiguration', soap);
+    }
+
     getCompatibleVideoEncoderConfigurations(params: ConfigurationTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<trt:GetCompatibleVideoEncoderConfigurations>';
