@@ -40,10 +40,111 @@ export class OnvifServicePtz extends OnvifServiceBase {
     getConfiguration(params: ConfigurationTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tptz:GetConfiguration>';
-		soapBody +=   '<tptz:ConfigurationToken>' + params.ConfigurationToken + '</tptz:ConfigurationToken>';
+		soapBody +=   '<tptz:PTZConfigurationToken>' + params.ConfigurationToken + '</tptz:PTZConfigurationToken>';
 		soapBody += '</tptz:GetConfiguration>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, 'GetConfigurations', soap);
+        return requestCommand(this.oxaddr, 'GetConfiguration', soap);
+    }
+
+
+    setConfiguration(params: SetPTZConfigurationParams): Promise<Result> {
+        let soapBody = '';
+        soapBody += '<tptz:SetConfiguration>';
+        soapBody += '<tptz:PTZConfiguration token = "' + params.ConfigurationToken + '"';
+        if (typeof params.MoveRamp === 'number')
+            soapBody += ' MoveRamp = "' + params.MoveRamp + '"';
+        if (typeof params.PresetRamp === 'number')
+            soapBody += ' PresetRamp = "' + params.PresetRamp + '"';
+        if (typeof params.PresetTourRamp === 'number')
+            soapBody += ' PresetTourRamp = "' + params.PresetTourRamp + '"';
+        soapBody += '>';
+        soapBody += '<tt:Name>' + params.Name + '</tt:Name>';
+        soapBody += '<tt:UseCount>0</tt:UseCount>';
+        soapBody += '<tt:NodeToken>' + params.NodeToken + '</tt:NodeToken>';
+        if (params.DefaultAbsolutePantTiltPositionSpace)
+            soapBody += '<tt:DefaultAbsolutePantTiltPositionSpace>' + params.DefaultAbsolutePantTiltPositionSpace + '</tt:DefaultAbsolutePantTiltPositionSpace>';
+        if (params.DefaultAbsoluteZoomPositionSpace)
+            soapBody += '<tt:DefaultAbsoluteZoomPositionSpace>' + params.DefaultAbsoluteZoomPositionSpace + '</tt:DefaultAbsoluteZoomPositionSpace>';
+        if (params.DefaultRelativePanTiltTranslationSpace)
+            soapBody += '<tt:DefaultRelativePanTiltTranslationSpace>' + params.DefaultRelativePanTiltTranslationSpace + '</tt:DefaultRelativePanTiltTranslationSpace>';
+        if (params.DefaultRelativeZoomTranslationSpace)
+            soapBody += '<tt:DefaultRelativeZoomTranslationSpace>' + params.DefaultRelativeZoomTranslationSpace + '</tt:DefaultRelativeZoomTranslationSpace>';
+        if (params.DefaultContinuousPanTiltVelocitySpace)
+            soapBody += '<tt:DefaultContinuousPanTiltVelocitySpace>' + params.DefaultContinuousPanTiltVelocitySpace + '</tt:DefaultContinuousPanTiltVelocitySpace>';
+        if (params.DefaultContinuousZoomVelocitySpace)
+            soapBody += '<tt:DefaultContinuousZoomVelocitySpace>' + params.DefaultContinuousZoomVelocitySpace + '</tt:DefaultContinuousZoomVelocitySpace>';
+        if (params.DefaultPTZSpeed) {
+            soapBody += '<tt:DefaultPTZSpeed>'
+            if (params.DefaultPTZSpeed.PanTilt) {
+                soapBody += '<tt:PanTilt';
+                if (params.DefaultPTZSpeed.PanTilt.space) {
+                    soapBody += ' space = "' + params.DefaultPTZSpeed.PanTilt.space + '"';
+                }
+                soapBody += ' x = "' + params.DefaultPTZSpeed.PanTilt.x + '"';
+                soapBody += ' y = "' + params.DefaultPTZSpeed.PanTilt.y + '"';
+                soapBody += '></tt:PanTilt>';
+            }
+            if (params.DefaultPTZSpeed.Zoom) {
+                soapBody += '<tt:Zoom';
+                if (params.DefaultPTZSpeed.Zoom.space) {
+                    soapBody += ' space = "' + params.DefaultPTZSpeed.Zoom.space + '"';
+                }
+                soapBody += ' x = "' + params.DefaultPTZSpeed.Zoom.x + '"';
+                soapBody += '></tt:Zoom>';
+            }
+            soapBody += '</tt:DefaultPTZSpeed>'
+        }
+        if (params.DefaultPTZTimeout)
+            soapBody += '<tt:DefaultPTZTimeout>' + params.DefaultPTZTimeout + '</tt:DefaultPTZTimeout>';
+        if (params.PanTiltLimits) {
+            soapBody += '<tt:PanTiltLimits>'
+            soapBody += '<tt:Range>'
+            soapBody += '<tt:URI>' + params.PanTiltLimits.Range.URI + '</tt:URI>';
+            soapBody += '<tt:XRange>'
+            soapBody += '<tt:Min>' + (typeof params.PanTiltLimits.Range.XRange.Min === 'number' ? params.PanTiltLimits.Range.XRange.Min : '-INF') + '</tt:Min>';
+            soapBody += '<tt:Max>' + (typeof params.PanTiltLimits.Range.XRange.Max === 'number' ? params.PanTiltLimits.Range.XRange.Max : '+INF') + '</tt:Max>';
+            soapBody += '</tt:XRange>'
+            soapBody += '<tt:YRange>'
+            soapBody += '<tt:Min>' + (typeof params.PanTiltLimits.Range.YRange.Min === 'number' ? params.PanTiltLimits.Range.YRange.Min : '-INF') + '</tt:Min>';
+            soapBody += '<tt:Max>' + (typeof params.PanTiltLimits.Range.YRange.Max === 'number' ? params.PanTiltLimits.Range.YRange.Max : '+INF') + '</tt:Max>';
+            soapBody += '</tt:YRange>'
+            soapBody += '</tt:Range>'
+            soapBody += '</tt:PanTiltLimits>'
+        }
+        if (params.ZoomLimits) {
+            soapBody += '<tt:ZoomLimits>'
+            soapBody += '<tt:Range>'
+            soapBody += '<tt:URI>' + params.ZoomLimits.Range.URI + '</tt:URI>';
+            soapBody += '<tt:XRange>'
+            soapBody += '<tt:Min>' + (typeof params.ZoomLimits.Range.XRange.Min === 'number' ? params.ZoomLimits.Range.XRange.Min : '-INF') + '</tt:Min>';
+            soapBody += '<tt:Max>' + (typeof params.ZoomLimits.Range.XRange.Max === 'number' ? params.ZoomLimits.Range.XRange.Max : '+INF') + '</tt:Max>';
+            soapBody += '</tt:XRange>'
+            soapBody += '</tt:Range>'
+            soapBody += '</tt:ZoomLimits>'
+        }
+        if (params.Extension) {
+            soapBody += '<tt:Extension>'
+            if (params.Extension.PTControlDirection) {
+                soapBody += '<tt:PTControlDirection>'
+                if (params.Extension.PTControlDirection.EFlip) {
+                    soapBody += '<tt:EFlip>'
+                    soapBody += '<tt:Mode>' + params.Extension.PTControlDirection.EFlip.Mode + '</tt:Mode>';
+                    soapBody += '</tt:EFlip>'
+                }
+                if (params.Extension.PTControlDirection.Reverse) {
+                    soapBody += '<tt:Reverse>'
+                    soapBody += '<tt:Mode>' + params.Extension.PTControlDirection.Reverse.Mode + '</tt:Mode>';
+                    soapBody += '</tt:Reverse>'
+                }
+                soapBody += '</tt:PTControlDirection>'
+            }
+            soapBody += '</tt:Extension>'
+        }
+        soapBody += '</tptz:PTZConfiguration>';
+        soapBody += '<tptz:ForcePersistence>true</tptz:ForcePersistence>';
+        soapBody += '</tptz:SetConfiguration>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'SetConfiguration', soap);
     }
 
     getStatus(): Promise<Result> {
@@ -251,4 +352,63 @@ export interface GotoPresetParams {
 export interface RemovePresetParams {
     ProfileToken: string;
     PresetToken: string;
+}
+
+export type SetPTZConfigurationParams = {
+    ConfigurationToken: string;
+    Name: string;
+    MoveRamp?: number;
+    PresetRamp?: number;
+    PresetTourRamp?: number;
+    NodeToken: string;
+    DefaultAbsolutePantTiltPositionSpace?: string;
+    DefaultAbsoluteZoomPositionSpace?: string;
+    DefaultRelativePanTiltTranslationSpace?: string;
+    DefaultRelativeZoomTranslationSpace?: string;
+    DefaultContinuousPanTiltVelocitySpace?: string;
+    DefaultContinuousZoomVelocitySpace?: string;
+    DefaultPTZSpeed?: {
+      PanTilt?: {
+        space?: string;
+        x: number;
+        y: number;
+      }
+      Zoom?: {
+        x: number;
+        space?: string;
+      }
+    }
+    DefaultPTZTimeout?: string;
+    PanTiltLimits?: {
+      Range: {
+        URI: string;
+        XRange: {
+          Min?: number;
+          Max?: number;
+        }
+        YRange: {
+          Min?: number;
+          Max?: number;
+        }
+      }
+    }
+    ZoomLimits?: {
+      Range: {
+        URI: string;
+        XRange: {
+          Min?: number;
+          Max?: number;
+        }
+      }
+    }
+    Extension?: {
+      PTControlDirection?: {
+        EFlip?: {
+          Mode: 'OFF' | 'ON' | 'Extended'
+        }
+        Reverse?: {
+          Mode: 'OFF' | 'ON' | 'AUTO' | 'Extended'
+        }
+      }
+    }
 }
