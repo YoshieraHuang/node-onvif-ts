@@ -2,7 +2,6 @@ import { parseStringPromise } from 'xml2js';
 import * as mHttp from 'http';
 import {createHash} from 'crypto';
 import * as mHtml from 'html';
-import { UrlWithStringQuery } from 'url';
 
 export interface Result {
     soap: string;
@@ -28,7 +27,7 @@ export function parse(soap: string) {
     });
 }
 
-export function requestCommand(oxaddr: UrlWithStringQuery, methodName: string, soap: string) {
+export function requestCommand(oxaddr: URL, methodName: string, soap: string) {
     return new Promise<Result>((resolve, reject) => {
         let xml = '';
         request(oxaddr, soap).then((res) => {
@@ -86,7 +85,7 @@ export function createRequestSoap(params: SoapParams) {
     return soap;
 }
 
-function request(oxaddr: UrlWithStringQuery, soap: string): Promise<string> {
+function request(oxaddr: URL, soap: string): Promise<string> {
     return new Promise((resolve, reject) => {
         const opts = {
             protocol: oxaddr.protocol,
