@@ -1,11 +1,10 @@
-import { parse, UrlWithStringQuery } from 'url';
 import { createRequestSoap } from './soap';
 
 export class OnvifServiceBase {
     protected xaddr = '';
     protected user = '';
     protected pass = '';
-    protected oxaddr: UrlWithStringQuery;
+    protected oxaddr: URL;
     protected timeDiff: number;
     protected namespaceAttrList: string[];
 
@@ -13,9 +12,10 @@ export class OnvifServiceBase {
         this.xaddr = xaddr;
         this.user = user || '';
         this.pass = pass || '';
-        this.oxaddr = parse(this.xaddr);
+        this.oxaddr = new URL(this.xaddr);
         if (this.user) {
-            this.oxaddr.auth = this.user + ':' + this.pass;
+            this.oxaddr.username = this.user;
+            this.oxaddr.password = this.pass;
         }
         this.timeDiff = 0;
     }
@@ -34,9 +34,11 @@ export class OnvifServiceBase {
         this.user = user;
         this.pass = pass;
         if (this.user) {
-            this.oxaddr.auth = this.user + ' ' + this.pass;
+            this.oxaddr.username = this.user;
+            this.oxaddr.password = this.pass;
         } else {
-            this.oxaddr.auth = '';
+            this.oxaddr.username = null;
+            this.oxaddr.password = null;
         }
     }
 
