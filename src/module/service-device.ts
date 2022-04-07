@@ -365,7 +365,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'SetIPAddressFilter', soap);
     }
 
-    getService(params: {IncludeCapability: boolean}): Promise<Result> {
+    getServices(params: {IncludeCapability: boolean}): Promise<Result> {
         let soapBody = '';
 		soapBody += '<tds:GetServices>';
 		soapBody += '<tds:IncludeCapability>' + params.IncludeCapability + '</tds:IncludeCapability>';
