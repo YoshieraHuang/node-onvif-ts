@@ -333,6 +333,68 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetMetadataConfigurationOptions', soap);
     }
 
+    setMetadataConfiguration(params: SetMetadataConfigurationParams): Promise<Result> {
+        let soapBody = '';
+        soapBody += '<trt:SetMetadataConfiguration>';
+        soapBody += '<trt:Configuration token = "' + params.ConfigurationToken + '"';
+        if (params.CompressionType)
+            soapBody += ' CompressionType = "' + params.CompressionType + '"';
+        if (typeof params.GeoLocation === 'boolean')
+            soapBody += ' GeoLocation = "' + params.GeoLocation + '"';
+        if (typeof params.ShapePolygon === 'boolean')
+            soapBody += ' ShapePolygon = "' + params.ShapePolygon + '"';
+        soapBody += '>';
+        soapBody += '<tt:Name>' + params.Name + '</tt:Name>';
+        soapBody += '<tt:UseCount>0</tt:UseCount>';
+        if (params.PTZStatus) {
+            soapBody += '<tt:PTZStatus>';
+            soapBody += '<tt:Status>' + params.PTZStatus.Status + '</tt:Status>';
+            soapBody += '<tt:Position>' + params.PTZStatus.Position + '</tt:Position>';
+            soapBody += '</tt:PTZStatus>';
+        }
+        if (typeof params.Analytics === 'boolean')
+            soapBody += '<tt:Analytics>' + params.Analytics + '</tt:Analytics>';
+        soapBody += '<tt:Multicast>';
+        soapBody += '<tt:Address>';
+        soapBody += '<tt:Type>IPv4</tt:Type>';
+        soapBody += '<tt:IPv4Address>0.0.0.0</tt:IPv4Address>';
+        soapBody += '<tt:IPv6Address></tt:IPv6Address>';
+        soapBody += '</tt:Address>';
+        soapBody += '<tt:Port>0</tt:Port>';
+        soapBody += '<tt:TTL>5</tt:TTL>';
+        soapBody += '<tt:AutoStart>false</tt:AutoStart>';
+        soapBody += '</tt:Multicast>';
+        soapBody += '<tt:SessionTimeout>PT60S</tt:SessionTimeout>';
+        if (params.AnalyticsEngineConfiguration) {
+            soapBody += '<tt:AnalyticsEngineConfiguration>';
+            if (params.AnalyticsEngineConfiguration.AnalyticsModule) {
+                soapBody += '<tt:AnalyticsModule>';
+                params.AnalyticsEngineConfiguration.AnalyticsModule.forEach(o => {
+                    soapBody += '<tt:Name>' + o.Name + '</tt:Name>';
+                    soapBody += '<tt:Type>' + o.Type + '</tt:Type>';
+                    soapBody += '<tt:Parameters>';
+                    o.Parameters.SimpleItem.forEach(si => {
+                        soapBody += '<tt:SimpleItem Name = "' + si.Name + '"';
+                        soapBody += ' Value = "' + si.Value + '"';
+                        soapBody += '></tt:SimpleItem>';
+                    });
+                    o.Parameters.ElementItem.forEach(ei => {
+                        soapBody += '<tt:ElementItem Name = "' + ei.Name + '"';
+                        soapBody += '></tt:ElementItem>';
+                    });
+                    soapBody += '</tt:Parameters>';
+                });
+                soapBody += '</tt:AnalyticsModule>';
+            }
+            soapBody += '</tt:AnalyticsEngineConfiguration>';
+        }
+        soapBody += '</trt:Configuration>';
+        soapBody += '<trt:ForcePersistence>true</trt:ForcePersistence>';
+        soapBody += '</trt:SetMetadataConfiguration>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'SetMetadataConfiguration', soap);
+    }
+
     getAudioSources(): Promise<Result> {
         const soapBody = '<trt:GetAudioSources/>';
         const soap = this.createRequestSoap(soapBody);
@@ -495,6 +557,21 @@ export interface ProfileAndConfigurationTokenParams {
     ConfigurationToken: string;
 }
 
+export type Config = {
+    Name: string;
+    Type: string;
+    Parameters: {
+      SimpleItem?: {
+        Name: string;
+        Value: number | boolean | string;
+      }[];
+      ElementItem?: {
+        Name: string;
+      }[];
+      Position: boolean;
+    }
+}
+
 export type SetVideoEncoderConfigurationParams = {
     ConfigurationToken: string;
     Name: string;
@@ -570,5 +647,21 @@ export enum ViewModeEnumerator {
     LeftHalf = 'LeftHalf',
     RightHalf = 'RightHalf',
     Dewarp = 'Dewarp',
+}
+
+export type SetMetadataConfigurationParams = {
+    ConfigurationToken: string;
+    Name: string;
+    CompressionType?: 'None' | 'GZIP' | 'EXI';
+    GeoLocation?: boolean;
+    ShapePolygon?: boolean;
+    PTZStatus?: {
+      Status: boolean;
+      Position: boolean;
+    }
+    Analytics?: boolean;
+    AnalyticsEngineConfiguration?: {
+      AnalyticsModule?: Config[];
+    }
 }
 
