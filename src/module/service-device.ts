@@ -14,6 +14,14 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return this.timeDiff;
     }
 
+    private fixTimeDiff(date: Date) {
+      if (date) {
+        const deviceTime = date.getTime();
+        const myTime = (new Date()).getTime();
+        this.timeDiff = deviceTime - myTime;
+      }
+    }
+
     getCapabilities(): Promise<Result> {
         let soapBody = '';
         soapBody += '<tds:GetCapabilities>';
@@ -196,16 +204,25 @@ export class OnvifServiceDevice extends OnvifServiceBase{
 
     getSystemDateAndTime(): Promise<Result> {
         const soapBody = '<tds:GetSystemDateAndTime/>';
-        const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, 'GetSystemDateAndTime', soap).then((result) => {
+        return new Promise<Result>((resolve, reject) => {
+          const soap = this.createRequestSoap(soapBody, true);
+          requestCommand(this.oxaddr, 'GetSystemDateAndTime', soap)
+          .then((result) => {
             const parsed = parseGetSystemDateAndTime(result.converted);
-            if (parsed && parsed.date) {
-                const deviceTime = parsed.date.getTime();
-                const myTime = (new Date()).getTime();
-                this.timeDiff = deviceTime - myTime;
-            }
-            return result;
-        });
+            this.fixTimeDiff(parsed?.date);
+            return resolve(result);
+          })
+          .catch((error) => {
+            const newSoap = this.createRequestSoap(soapBody);
+            requestCommand(this.oxaddr, 'GetSystemDateAndTime', newSoap)
+            .then((result) => {
+              const parsed = parseGetSystemDateAndTime(result.converted);
+              this.fixTimeDiff(parsed?.date);
+              return resolve(result);
+            })
+            .catch((err) => reject(err));
+          });
+        })
     }
 
     setSystemDateAndTime(params: SetSystemDateAndTimeParams): Promise<Result> {

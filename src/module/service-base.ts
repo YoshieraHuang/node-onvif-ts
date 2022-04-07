@@ -20,14 +20,20 @@ export class OnvifServiceBase {
         this.timeDiff = 0;
     }
 
-    protected createRequestSoap(body: string) {
-        return createRequestSoap({
-            body,
-            xmlns: this.namespaceAttrList,
-            diff: this.timeDiff,
-            user: this.user,
-            pass: this.pass,
-        });
+    protected createRequestSoap(body: string, withoutUser = false) {
+        return withoutUser
+          ? createRequestSoap({
+              body,
+              xmlns: this.namespaceAttrList,
+              diff: this.timeDiff,
+          })
+          : createRequestSoap({
+              body,
+              xmlns: this.namespaceAttrList,
+              diff: this.timeDiff,
+              user: this.user,
+              pass: this.pass,
+          });
     }
 
     setAuth(user: string, pass: string) {
