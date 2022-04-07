@@ -219,6 +219,72 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetVideoSourceConfigurationOptions', soap);
     }
 
+    setVideoSourceConfiguration(params: SetVideoSourceConfigurationParams): Promise<Result> {
+        let soapBody = '';
+        soapBody += '<trt:SetVideoSourceConfiguration>';
+        soapBody += '<trt:Configuration token = "' + params.ConfigurationToken + '"';
+        soapBody += '>';
+        soapBody += '<tt:Name>' + params.Name + '</tt:Name>';
+        soapBody += '<tt:UseCount>0</tt:UseCount>';
+        soapBody += '<tt:SourceToken>' + params.SourceToken + '</tt:SourceToken>';
+        soapBody += '<tt:Bounds';
+        soapBody += ' x = "' + params.Bounds.x + '"';
+        soapBody += ' y = "' + params.Bounds.y + '"';
+        soapBody += ' width = "' + params.Bounds.width + '"';
+        soapBody += ' height = "' + params.Bounds.height + '"';
+        soapBody += '></tt:Bounds>';
+        if (params.Extension) {
+            soapBody += '<tt:Extension>';
+            if (params.Extension.Rotate) {
+                soapBody += '<tt:Rotate>';
+                soapBody += '<tt:Mode>' + params.Extension.Rotate.Mode + '</tt:Mode>';
+                if (typeof params.Extension.Rotate.Degree === 'number') {
+                    soapBody += '<tt:Degree>' + params.Extension.Rotate.Degree + '</tt:Degree>';
+                }
+                soapBody += '</tt:Rotate>';
+            }
+            if (params.Extension.Extension) {
+                soapBody += '<tt:Extension>';
+                if (params.Extension.Extension.LensDescription) {
+                    soapBody += '<tt:LensDescription';
+                    if (typeof params.Extension.Extension.LensDescription.FocalLength === 'number')
+                        soapBody += ' FocalLength = "' + params.Extension.Extension.LensDescription.FocalLength + '"';
+                    soapBody += '>';
+                    soapBody += '<tt:Offset';
+                    if (typeof params.Extension.Extension.LensDescription.Offset.x === 'number')
+                        soapBody += ' x = "' + params.Extension.Extension.LensDescription.Offset.x + '"';
+                    if (typeof params.Extension.Extension.LensDescription.Offset.y === 'number')
+                        soapBody += ' y = "' + params.Extension.Extension.LensDescription.Offset.y + '"';
+                    soapBody += '></tt:Offset>';
+                    soapBody += '<tt:Projection>';
+                    soapBody += '<tt:Angle>' + params.Extension.Extension.LensDescription.Projection.Angle + '</tt:Angle>';
+                    soapBody += '<tt:Radius>' + params.Extension.Extension.LensDescription.Projection.Radius + '</tt:Radius>';
+                    if (typeof params.Extension.Extension.LensDescription.Projection.Transmittance === 'number') {
+                        soapBody += '<tt:Transmittance>' + params.Extension.Extension.LensDescription.Projection.Transmittance + '</tt:Transmittance>';
+                    }
+                    soapBody += '</tt:Projection>';
+                    soapBody += '<tt:XFactor>' + params.Extension.Extension.LensDescription.XFactor + '</tt:XFactor>';
+                    soapBody += '</tt:LensDescription>';
+                }
+                if (params.Extension.Extension.SceneOrientation) {
+                    soapBody += '<tt:SceneOrientation>';
+                    soapBody += '<tt:Mode>' + params.Extension.Extension.SceneOrientation.Mode + '</tt:Mode>';
+                    if (params.Extension.Extension.SceneOrientation.Orientation) {
+                        soapBody += '<tt:Orientation>' + params.Extension.Extension.SceneOrientation.Orientation + '</tt:Orientation>';
+                    }
+                    soapBody += '</tt:SceneOrientation>';
+                }
+                soapBody += '</tt:Extension>';
+            }
+            soapBody += '</tt:Extension>';
+        }
+        soapBody += '</trt:Configuration>';
+        soapBody += '<trt:ForcePersistence>true</trt:ForcePersistence>';
+        soapBody += '</trt:SetVideoSourceConfiguration>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'SetVideoSourceConfiguration', soap);
+    }
+
     getMetadataConfiguration(params: ConfigurationTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<trt:GetMetadataConfiguration>';
@@ -456,3 +522,53 @@ export type SetVideoEncoderConfigurationParams = {
     }
   }
 );
+
+export interface SetVideoSourceConfigurationParams {
+    ConfigurationToken: string;
+    Name: string;
+    ViewMode?: ViewModeEnumerator;
+    SourceToken: string;
+    Bounds: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    }
+    Extension?: {
+      Rotate?: {
+        Mode: 'OFF' | 'ON' | 'AUTO';
+        Degree?: number;
+      }
+      Extension?: {
+        LensDescription?: {
+          FocalLength?: number;
+          Offset: {
+            x?: number;
+            y?: number;
+          }
+          Projection: {
+            Angle: number;
+            Radius: number;
+            Transmittance?: number;
+          }
+          XFactor: number;
+        }
+        SceneOrientation?: {
+          Mode: 'MANUAL' | 'AUTO';
+          Orientation?: string;
+        }
+      }
+    }
+}
+
+export enum ViewModeEnumerator {
+    Fisheye = 'Fisheye',
+    Panorama360 = '360Panorama',
+    Panorama180 = '180Panorama',
+    Quad = 'Quad',
+    Original = 'Original',
+    LeftHalf = 'LeftHalf',
+    RightHalf = 'RightHalf',
+    Dewarp = 'Dewarp',
+}
+
