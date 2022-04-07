@@ -174,7 +174,7 @@ export class OnvifDevice extends EventEmitter{
         }
 
         if (!this.services.ptz) {
-            return Promise.reject(new Error('The device does not support snaphost or you have not authorized by the device'));
+            return Promise.reject(new Error('The device does not support PTZ'));
         }
 
         const x = params.speed.x || 0;
@@ -199,7 +199,7 @@ export class OnvifDevice extends EventEmitter{
         }
 
         if (!this.services.ptz) {
-            return Promise.reject(new Error('The device does not support snaphost or you have not authorized by the device'));
+            return Promise.reject(new Error('The device does not support PTZ'));
         }
 
         this.ptzMoving = false;
@@ -294,7 +294,7 @@ export class OnvifDevice extends EventEmitter{
             this.lastResponse = res;
             const rawProfiles = res.data?.GetProfilesResponse?.Profiles as any[] | any;
             if (!rawProfiles) {
-                throw new Error('Failed to initialize the device: The targeted device does not any media profiles.');
+                throw new Error('Failed to initialize the device: The targeted device does not have any media profiles.');
             }
             const profiles: any[] = [].concat(rawProfiles);
             profiles.forEach((p) => {
