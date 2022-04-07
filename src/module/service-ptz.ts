@@ -46,8 +46,11 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetConfigurations', soap);
     }
 
-    getStatus(): Promise<Result> {
-        const soapBody = '<tptz:GetStatus />';
+    getStatus(params: ProfileTokenParams): Promise<Result> {
+        let soapBody = '';
+        soapBody += '<tptz:GetStatus>';
+        soapBody += '<tptz:ProfileToken>' + params.ProfileToken + '</tptz:ProfileToken>';
+        soapBody += '</tptz:GetStatus>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetStatus', soap);
     }

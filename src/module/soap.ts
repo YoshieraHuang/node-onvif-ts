@@ -147,7 +147,7 @@ function request(oxaddr: UrlWithStringQuery, soap: string): Promise<string> {
             req.setTimeout(HTTP_TIMEOUT);
 
             req.on('timeout', () => {
-                req.abort();
+                req.destroy();
             });
 
             req.on('error', (err) => {

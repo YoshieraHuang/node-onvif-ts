@@ -449,7 +449,7 @@ export class OnvifDevice extends EventEmitter{
             }
             try {
                 const params = { ProfileToken: profile.token};
-                const result = await this.services.media.GetSnapshotUri(params);
+                const result = await this.services.media.getSnapshotUri(params);
                 this.lastResponse = result;
                 let snapshotUri = result.data.GetSnapshotUriResponse.MediaUri.Uri;
                 snapshotUri = this.getSnapshotUri(snapshotUri);
