@@ -352,6 +352,16 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetSnapshotUri', soap);
     }
+
+    addPTZConfiguration(params: ProfileAndConfigurationTokenParams): Promise<Result> {
+        let soapBody = '';
+		soapBody += '<trt:AddPTZConfiguration>';
+        soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
+        soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
+		soapBody += '</trt:AddPTZConfiguration>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'AddPTZConfiguration', soap);
+    }
 }
 
 export interface OnvifServiceMediaConfigs extends OnvifServiceBaseConfigs {
