@@ -117,12 +117,12 @@ export class OnvifDevice extends EventEmitter{
         return this.getInformation();
     }
 
-    async shortInit() {
+    async servicesInit() {
         await this.getSystemDateAndTime();
         await this.getServices();
     }
 
-    async shortInitInfo() {
+    async deviceInformationInit() {
         await this.getSystemDateAndTime();
         await this.getDeviceInformation();
         return this.getInformation();
