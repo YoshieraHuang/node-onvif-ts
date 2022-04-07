@@ -117,6 +117,17 @@ export class OnvifDevice extends EventEmitter{
         return this.getInformation();
     }
 
+    async shortInit() {
+        await this.getSystemDateAndTime();
+        await this.getServices();
+    }
+
+    async shortInitInfo() {
+        await this.getSystemDateAndTime();
+        await this.getDeviceInformation();
+        return this.getInformation();
+    }
+
     fetchSnapshot(): Promise<Snapshot> {
         if (!this.currentProfile) {
             return Promise.reject(new Error('No media profile is selected'));
