@@ -63,6 +63,7 @@ export class OnvifServiceMedia extends OnvifServiceBase {
 		}
 		soapBody += '</trt:GetVideoEncoderConfigurationOptions>';
         const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'GetVideoEncoderConfigurationOptions', soap);
     }
 
     setVideoEncoderConfiguration(params: SetVideoEncoderConfigurationParams): Promise<Result> {
