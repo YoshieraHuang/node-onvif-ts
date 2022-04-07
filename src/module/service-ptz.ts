@@ -46,6 +46,23 @@ export class OnvifServicePtz extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetConfiguration', soap);
     }
 
+    getCompatibleConfigurations(params: ProfileTokenParams): Promise<Result> {
+        let soapBody = '';
+		soapBody += '<tptz:GetCompatibleConfigurations>';
+		soapBody +=   '<tptz:ProfileToken>' + params.ProfileToken + '</tptz:ProfileToken>';
+		soapBody += '</tptz:GetCompatibleConfigurations>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'GetCompatibleConfigurations', soap);
+    }
+
+    getConfigurationOptions(params: ConfigurationTokenParams): Promise<Result> {
+        let soapBody = '';
+		soapBody += '<tptz:GetConfigurationOptions>';
+		soapBody +=   '<tptz:ConfigurationToken>' + params.ConfigurationToken + '</tptz:ConfigurationToken>';
+		soapBody += '</tptz:GetConfigurationOptions>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'GetConfigurationOptions', soap);
+    }
 
     setConfiguration(params: SetPTZConfigurationParams): Promise<Result> {
         let soapBody = '';
