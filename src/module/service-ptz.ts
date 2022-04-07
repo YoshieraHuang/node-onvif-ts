@@ -60,7 +60,9 @@ export class OnvifServicePtz extends OnvifServiceBase {
 		soapBody += '<tptz:ContinuousMove>';
 		soapBody +=   '<tptz:ProfileToken>' + params.ProfileToken + '</tptz:ProfileToken>';
 		soapBody +=   '<tptz:Velocity>';
-		soapBody +=     '<tt:PanTilt x="' + params.Velocity.x + '" y="' + params.Velocity.y + '"></tt:PanTilt>';
+		if(params.Velocity.x && params.Velocity.y) {
+      soapBody +=     '<tt:PanTilt x="' + params.Velocity.x + '" y="' + params.Velocity.y + '"></tt:PanTilt>';
+    }
 		if(params.Velocity.z) {
 			soapBody +=     '<tt:Zoom x="' + params.Velocity.z + '"></tt:Zoom>';
 		}
@@ -85,8 +87,12 @@ export class OnvifServicePtz extends OnvifServiceBase {
 
 		if(params.Speed) {
 			soapBody +=   '<tptz:Speed>';
-			soapBody +=     '<tt:PanTilt x="' + params.Speed.x + '" y="' + params.Speed.y + '" />';
-			soapBody +=     '<tt:Zoom x="' + params.Speed.z + '"/>';
+      if (params.Speed.x && params.Speed.y) {
+        soapBody +=     '<tt:PanTilt x="' + params.Speed.x + '" y="' + params.Speed.y + '" />';
+      }
+      if (params.Speed.z) {
+        soapBody +=     '<tt:Zoom x="' + params.Speed.z + '"/>';
+      }
 			soapBody +=   '</tptz:Speed>';
 		}
 
@@ -107,8 +113,12 @@ export class OnvifServicePtz extends OnvifServiceBase {
 
 		if(params.Speed) {
 			soapBody +=   '<tptz:Speed>';
-			soapBody +=     '<tt:PanTilt x="' + params.Speed.x + '" y="' + params.Speed.y + '" />';
-			soapBody +=     '<tt:Zoom x="' + params.Speed.z + '"/>';
+      if (params.Speed.x && params.Speed.y) {
+        soapBody +=     '<tt:PanTilt x="' + params.Speed.x + '" y="' + params.Speed.y + '" />';
+      }
+      if (params.Speed.z) {
+        soapBody +=     '<tt:Zoom x="' + params.Speed.z + '"/>';
+      }
 			soapBody +=   '</tptz:Speed>';
 		}
 
@@ -184,8 +194,12 @@ export class OnvifServicePtz extends OnvifServiceBase {
 		soapBody +=   '<tptz:PresetToken>' + params.PresetToken + '</tptz:PresetToken>';
 		if(params.Speed) {
 			soapBody +=   '<tptz:Speed>';
-			soapBody +=     '<tt:PanTilt x="' + params.Speed.x + '" y="' + params.Speed.y + '" />';
-			soapBody +=     '<tt:Zoom x="' + params.Speed.z + '"/>';
+      if (params.Speed.x && params.Speed.y) {
+        soapBody +=     '<tt:PanTilt x="' + params.Speed.x + '" y="' + params.Speed.y + '" />';
+      }
+      if (params.Speed.z) {
+        soapBody +=     '<tt:Zoom x="' + params.Speed.z + '"/>';
+      }
 			soapBody +=   '</tptz:Speed>';
 		}
         soapBody += '</tptz:GotoPreset>';
@@ -214,20 +228,20 @@ export interface NodeTokenParams {
 
 export interface ContinuousMoveParams {
     ProfileToken: string;
-    Velocity: {x: number, y: number, z: number};
+    Velocity: {x?: number, y?: number, z?: number}
     Timeout?: number;
 }
 
 export interface AbsoluteMoveParams {
     ProfileToken: string;
-    Position: {x: number, y: number, z: number};
-    Speed: {x: number, y: number, z: number};
+    Position: {x: number, y: number, z: number}
+    Speed?: {x?: number, y?: number, z?: number}
 }
 
 export interface RelativeMoveParams {
     ProfileToken: string;
-    Translation: {x: number, y: number, z: number};
-    Speed: {x: number, y: number, z: number};
+    Translation: {x: number, y: number, z: number}
+    Speed?: {x?: number, y?: number, z?: number}
 }
 
 export interface StopParams {
@@ -248,7 +262,7 @@ export type SetPresetParams = { ProfileToken: string } & (
 export interface GotoPresetParams {
     ProfileToken: string;
     PresetToken: string;
-    Speed?: {x: number, y: number, z: number};
+    Speed?: {x: number, y: number, z: number}
 }
 
 export interface RemovePresetParams {
