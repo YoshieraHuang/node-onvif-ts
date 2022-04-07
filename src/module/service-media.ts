@@ -449,6 +449,21 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetAudioSourceConfigurationOptions', soap);
     }
 
+    setAudioSourceConfiguration(params: SetAudioSourceConfigurationParams): Promise<Result> {
+        let soapBody = '';
+        soapBody += '<trt:SetAudioSourceConfiguration>';
+        soapBody += '<trt:Configuration token = "' + params.ConfigurationToken + '"';
+        soapBody += '>';
+        soapBody += '<tt:Name>' + params.Name + '</tt:Name>';
+        soapBody += '<tt:UseCount>0</tt:UseCount>';
+        soapBody += '<tt:SourceToken>' + params.SourceToken + '</tt:SourceToken>';
+        soapBody += '</trt:Configuration>';
+        soapBody += '<trt:ForcePersistence>true</trt:ForcePersistence>';
+        soapBody += '</trt:SetAudioSourceConfiguration>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'SetAudioSourceConfiguration', soap);
+    }
+
     getAudioEncoderConfiguration(params: ConfigurationTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<trt:GetAudioEncoderConfiguration>';
@@ -663,5 +678,11 @@ export type SetMetadataConfigurationParams = {
     AnalyticsEngineConfiguration?: {
       AnalyticsModule?: Config[];
     }
+}
+
+export type SetAudioSourceConfigurationParams = {
+    ConfigurationToken: string;
+    Name: string;
+    SourceToken: string;
 }
 
