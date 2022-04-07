@@ -61,6 +61,16 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return requestCommand(this.oxaddr, 'AddScopes', soap);
     }
 
+    removeScopes(params: {Scopes: string[]}): Promise<Result> {
+        let soapBody = '<tds:RemoveScopes>';
+        params.Scopes.forEach((s) => {
+            soapBody += '<tds:ScopeItem>' + s + '</tds:ScopeItem>';
+        });
+        soapBody += '</tds:RemoveScopes>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'RemoveScopes', soap);
+    }
+
     getHostname(): Promise<Result> {
         const soapBody = '<tds:GetHostname/>';
         const soap = this.createRequestSoap(soapBody);
