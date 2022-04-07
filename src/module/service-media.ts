@@ -63,7 +63,60 @@ export class OnvifServiceMedia extends OnvifServiceBase {
 		}
 		soapBody += '</trt:GetVideoEncoderConfigurationOptions>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, 'VideoEncoderConfigurationOptions', soap);
+    }
+
+    setVideoEncoderConfiguration(params: SetVideoEncoderConfigurationParams): Promise<Result> {
+        let soapBody = '';
+        soapBody += '<trt:SetVideoEncoderConfiguration>';
+        soapBody += '<trt:Configuration token = "' + params.ConfigurationToken + '"';
+        soapBody += ' GuaranteedFrameRate = "false">';
+        soapBody += '<tt:Name>' + params.Name + '</tt:Name>';
+        soapBody += '<tt:UseCount>0</tt:UseCount>';
+        soapBody += '<tt:Encoding>' + params.Encoding + '</tt:Encoding>';
+        soapBody += '<tt:Resolution>';
+        soapBody += '<tt:Width>' + params.Resolution.Width + '</tt:Width>';
+        soapBody += '<tt:Height>' + params.Resolution.Height + '</tt:Height>';
+        soapBody += '</tt:Resolution>';
+        soapBody += '<tt:Quality>' + params.Quality + '</tt:Quality>';
+        if (params.RateControl) {
+          soapBody += '<tt:RateControl>';
+          soapBody += '<tt:FrameRateLimit>' + params.RateControl.FrameRateLimit + '</tt:FrameRateLimit>';
+          soapBody += '<tt:EncodingInterval>' + params.RateControl.EncodingInterval + '</tt:EncodingInterval>';
+          soapBody += '<tt:BitrateLimit>' + params.RateControl.BitrateLimit + '</tt:BitrateLimit>';
+          soapBody += '</tt:RateControl>';
+        }
+        if ('MPEG4' in params) {
+            soapBody += '<tt:MPEG4>';
+            soapBody += '<tt:GovLength>' + params.MPEG4.GovLength + '</tt:GovLength>';
+            soapBody += '<tt:Mpeg4Profile>';
+            soapBody += params.MPEG4.Mpeg4Profile;
+            soapBody += '</tt:Mpeg4Profile>';
+            soapBody += '</tt:MPEG4>';
+        }
+        if ('H264' in params) {
+            soapBody += '<tt:H264>';
+            soapBody += '<tt:GovLength>' + params.H264.GovLength + '</tt:GovLength>';
+            soapBody += '<tt:H264Profile>';
+            soapBody += params.H264.H264Profile;
+            soapBody += '</tt:H264Profile>';
+            soapBody += '</tt:H264>';
+        }
+        soapBody += '<tt:Multicast>';
+        soapBody += '<tt:Address>';
+        soapBody += '<tt:Type>IPv4</tt:Type>';
+        soapBody += '<tt:IPv4Address>0.0.0.0</tt:IPv4Address>';
+        soapBody += '<tt:IPv6Address></tt:IPv6Address>';
+        soapBody += '</tt:Address>';
+        soapBody += '<tt:Port>0</tt:Port>';
+        soapBody += '<tt:TTL>5</tt:TTL>';
+        soapBody += '<tt:AutoStart>false</tt:AutoStart>';
+        soapBody += '</tt:Multicast>';
+        soapBody += '<tt:SessionTimeout>PT60S</tt:SessionTimeout>';
+        soapBody += '</trt:Configuration>';
+        soapBody += '<trt:ForcePersistence>true</trt:ForcePersistence>';
+        soapBody += '</trt:SetVideoEncoderConfiguration>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'SetVideoEncoderConfiguration', soap);
     }
 
     getGuaranteedNumberOfVideoEncoderInstances(params: ConfigurationTokenParams): Promise<Result> {
@@ -375,3 +428,31 @@ export interface ProfileAndConfigurationTokenParams {
     ProfileToken: string;
     ConfigurationToken: string;
 }
+
+export type SetVideoEncoderConfigurationParams = {
+    ConfigurationToken: string;
+    Name: string;
+    Encoding: 'JPEG' | 'MPEG4' | 'H264';
+    Resolution: {
+      Width: number;
+      Height: number;
+    }
+    Quality: number;
+    RateControl?: {
+      FrameRateLimit: number;
+      EncodingInterval: number;
+      BitrateLimit: number;
+    }
+} & (
+  {
+    MPEG4: {
+      GovLength: number;
+      Mpeg4Profile: 'SP' | 'ASP';
+    }
+  } | {
+    H264: {
+      GovLength: number;
+      H264Profile: 'Baseline' | 'Main' | 'Extended' | 'High';
+    }
+  }
+);
