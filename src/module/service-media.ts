@@ -43,22 +43,22 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetVideoEncoderConfiguration', soap);
     }
 
-    getCompatibleVideoEncoderConfigurations(params: ConfigurationTokenParams): Promise<Result> {
+    getCompatibleVideoEncoderConfigurations(params: ProfileTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<trt:GetCompatibleVideoEncoderConfigurations>';
-		soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
+    soapBody += '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		soapBody += '</trt:GetCompatibleVideoEncoderConfigurations>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, 'CompatibleVideoEncoderConfigurations', soap);
+        return requestCommand(this.oxaddr, 'GetCompatibleVideoEncoderConfigurations', soap);
     }
 
     getVideoEncoderConfigurationOptions(params: ProfileAndConfigurationTokenOptionalParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<trt:GetVideoEncoderConfigurationOptions>';
-		if(params.ProfileToken) {
+		if (params.ProfileToken) {
 			soapBody += '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
 		}
-		if(params.ConfigurationToken) {
+		if (params.ConfigurationToken) {
 			soapBody += '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		}
 		soapBody += '</trt:GetVideoEncoderConfigurationOptions>';
@@ -126,7 +126,7 @@ export class OnvifServiceMedia extends OnvifServiceBase {
 		soapBody +=   '<trt:ConfigurationToken>' + params.ConfigurationToken + '</trt:ConfigurationToken>';
 		soapBody += '</trt:GetGuaranteedNumberOfVideoEncoderInstances>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, 'GuaranteedNumberOfVideoEncoderInstances', soap);
+        return requestCommand(this.oxaddr, 'GetGuaranteedNumberOfVideoEncoderInstances', soap);
     }
 
     getProfiles(): Promise<Result> {
@@ -148,7 +148,7 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         let soapBody = '';
 		soapBody += '<trt:CreateProfile>';
         soapBody +=   '<trt:Name>' + params.Name + '</trt:Name>';
-		if(params.Token) {
+		if (params.Token) {
 			soapBody +=   '<trt:Token>' + params.Token + '</trt:Token>';
 		}
 		soapBody += '</trt:CreateProfile>';
@@ -559,7 +559,7 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'StopMulticastStreaming', soap);
     }
 
-    GetSnapshotUri(params: ProfileTokenParams): Promise<Result> {
+    getSnapshotUri(params: ProfileTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<trt:GetSnapshotUri>';
 		soapBody +=   '<trt:ProfileToken>' + params.ProfileToken + '</trt:ProfileToken>';
