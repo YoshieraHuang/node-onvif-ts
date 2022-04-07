@@ -312,8 +312,10 @@ export class OnvifServiceDevice extends OnvifServiceBase{
             soapBody += `<tt:Type>${manual.Type}</tt:Type>`;
             if (manual.Type === 'IPv4') {
                 soapBody += `<tt:IPv4Address>${manual.IPv4Address}</tt:IPv4Address>`;
-            } else {
+            } else if (manual.Type === 'IPv6') {
                 soapBody += `<tt:IPv6Address>${manual.IPv6Address}</tt:IPv6Address>`;
+            } else {
+                soapBody += `<tt:DNS>${manual.DNS}</tt:DNS>`;
             }
             soapBody += '</tds:NTPManual>';
         }
@@ -388,7 +390,7 @@ export interface SetIPAddressFilterParams {
 
 export interface SetNTPParams {
     FromDHCP: boolean;
-    NTPManual?: IPAddress;
+    NTPManual?: IPAddress | {Type: 'DNS', DNS: string};
 }
 export interface SetUserParams {
     User: {Username: string, Password?: string, UserLevel?: 'Administrator' | 'Operator' | 'User' | 'Anonymous' }[];
