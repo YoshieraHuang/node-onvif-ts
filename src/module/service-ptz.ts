@@ -19,7 +19,13 @@ export class OnvifServicePtz extends OnvifServiceBase {
     getNodes(): Promise<Result> {
         const soapBody = '<tptz:GetNodes />';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, 'GetNodes', soap);
+        return requestCommand(this.oxaddr, 'GetNodes', soap).then((result) => {
+            const d = result.data?.GetNodesResponse?.PTZNode;
+            if (d && !Array.isArray(d)) {
+                result.data.GetNodesResponse.PTZNode = [d];
+            }
+            return result;
+        });
     }
 
     getNode(params: NodeTokenParams): Promise<Result> {
@@ -34,7 +40,13 @@ export class OnvifServicePtz extends OnvifServiceBase {
     getConfigurations(): Promise<Result> {
         const soapBody = '<tptz:GetConfigurations />';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, 'GetConfigurations', soap);
+        return requestCommand(this.oxaddr, 'GetConfigurations', soap).then((result) => {
+            const d = result.data?.GetConfigurationsResponse?.PTZConfiguration;
+            if (d && !Array.isArray(d)) {
+                result.data.GetConfigurationsResponse.PTZConfiguration = [d];
+            }
+            return result;
+        });
     }
 
     getConfiguration(params: ConfigurationTokenParams): Promise<Result> {
