@@ -157,7 +157,7 @@ function sendProbe() {
         });
     });
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
 		if (!udp) {
 			reject(new Error('No UDP connection is available. The init() method might not be called yet.'));
 		}
@@ -204,7 +204,7 @@ function stopProbe() {
         discoveryWaitTimer = null;
     }
 
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
         if (udp) {
             udp.close(() => {
                 udp.unref();

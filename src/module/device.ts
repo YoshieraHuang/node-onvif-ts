@@ -2,7 +2,6 @@ import { EventEmitter } from 'events';
 import { OnvifServiceEvents } from './service-events';
 import { OnvifServiceMedia } from './service-media';
 import { OnvifServicePtz, ContinuousMoveParams, StopParams } from './service-ptz';
-import { parse, UrlWithStringQuery, format, UrlObject } from 'url';
 import { OnvifServiceDevice } from './service-device';
 import { OnvifHttpAuth } from './http-auth';
 import { IncomingHttpHeaders } from 'http';
@@ -22,7 +21,7 @@ export class OnvifDevice extends EventEmitter{
     private xaddr = '';
     private user = '';
     private pass = '';
-    private oxaddr: UrlWithStringQuery;
+    private oxaddr: URL;
     private keepAddr = false;
     private lastResponse: any = null; // for debug
     private timeDiff = 0;
@@ -36,7 +35,7 @@ export class OnvifDevice extends EventEmitter{
 
         if (('xaddr' in configs) && (configs.xaddr)) {
             this.xaddr = configs.xaddr;
-            const ourl = parse(this.xaddr);
+            const ourl = new URL(this.xaddr);
             this.address = ourl.hostname;
         } else if (('address' in configs) && (configs.address)) {
             this.keepAddr = true;
@@ -46,9 +45,10 @@ export class OnvifDevice extends EventEmitter{
 
         this.user = configs.user || '';
         this.pass = configs.pass || '';
-        this.oxaddr = parse(this.xaddr);
+        this.oxaddr = new URL(this.xaddr);
         if (this.user) {
-            this.oxaddr.auth = this.user + ':' + this.pass;
+            this.oxaddr.username = this.user;
+            this.oxaddr.password = this.pass;
         }
 
         this.services = {
@@ -138,13 +138,13 @@ export class OnvifDevice extends EventEmitter{
         }
 
         return new Promise((resolve, reject) => {
-            const ourl = parse(this.currentProfile.snapshot);
+            const ourl = new URL(this.currentProfile.snapshot);
             const options = {
                 protocol: ourl.protocol,
                 auth: this.user + ':' + this.pass,
                 hostname: ourl.hostname,
                 port: ourl.port || 80,
-                path: ourl.path,
+                path: ourl.pathname + ourl.search,
                 method: 'GET',
             };
             const req = (new OnvifHttpAuth()).request(options, (res) => {
@@ -185,7 +185,7 @@ export class OnvifDevice extends EventEmitter{
         }
 
         if (!this.services.ptz) {
-            return Promise.reject(new Error('The device does not support snaphost or you have not authorized by the device'));
+            return Promise.reject(new Error('The device does not support PTZ'));
         }
 
         const x = params.speed.x || 0;
@@ -210,7 +210,7 @@ export class OnvifDevice extends EventEmitter{
         }
 
         if (!this.services.ptz) {
-            return Promise.reject(new Error('The device does not support snaphost or you have not authorized by the device'));
+            return Promise.reject(new Error('The device does not support PTZ'));
         }
 
         this.ptzMoving = false;
@@ -228,7 +228,8 @@ export class OnvifDevice extends EventEmitter{
         this.user = user || '';
         this.pass = pass || '';
         if (this.user) {
-            this.oxaddr.auth = this.user + ':' + this.pass;
+            this.oxaddr.username = this.user;
+            this.oxaddr.password = this.pass;
         }
         this.services.device?.setAuth(user, pass);
         this.services.events?.setAuth(user, pass);
@@ -350,7 +351,7 @@ export class OnvifDevice extends EventEmitter{
             this.lastResponse = res;
             const rawProfiles = res.data?.GetProfilesResponse?.Profiles as any[] | any;
             if (!rawProfiles) {
-                throw new Error('Failed to initialize the device: The targeted device does not any media profiles.');
+                throw new Error('Failed to initialize the device: The targeted device does not have any media profiles.');
             }
             const profiles: any[] = [].concat(rawProfiles);
             profiles.forEach((p) => {
@@ -505,7 +506,7 @@ export class OnvifDevice extends EventEmitter{
             }
             try {
                 const params = { ProfileToken: profile.token};
-                const result = await this.services.media.GetSnapshotUri(params);
+                const result = await this.services.media.getSnapshotUri(params);
                 this.lastResponse = result;
                 let snapshotUri = result.data.GetSnapshotUriResponse.MediaUri.Uri;
                 snapshotUri = this.getSnapshotUri(snapshotUri);
@@ -522,7 +523,8 @@ export class OnvifDevice extends EventEmitter{
             return directXaddr;
         }
 
-        const path = parse(directXaddr).path;
+        const address = new URL(directXaddr);
+        const path = address.pathname + address.search;
         const xaddr = 'http://' + this.address + path;
         return xaddr;
     }
@@ -535,15 +537,11 @@ export class OnvifDevice extends EventEmitter{
             directuri = directUri;
         }
         if (!this.keepAddr) return directuri;
-        const base = parse('http://' + this.address);
-        const parts = parse(directuri);
-        const newParts = {
-            host: base.host,
-            pathname: base.pathname === '/' ? parts.pathname : base.pathname + parts.pathname,
-            search: parts.search,
-            port: base.port,
-        };
-        return format(newParts);
+        const base = new URL('http://' + this.address);
+        const parts = new URL(directuri);
+        base.pathname = base.pathname === '/' ? parts.pathname : base.pathname + parts.pathname;
+        base.search = parts.search;
+        return base.href;
     }
 
     private getSnapshotUri(directUri: string | {'_': string}) {
@@ -554,17 +552,12 @@ export class OnvifDevice extends EventEmitter{
             directuri = directUri;
         }
         if (!this.keepAddr) return directuri;
-        const base = parse('http://' + this.address);
-        const parts = parse(directuri);
-        const newParts: UrlObject = {
-            protocol: parts.protocol,
-            host: base.host,
-            pathname: base.pathname === '/' ? parts.pathname : base.pathname + parts.pathname,
-            search: parts.search,
-            port: base.port,
-        };
-        const newUri = format(newParts);
-        return newUri;
+        const base = new URL('http://' + this.address);
+        const parts = new URL(directuri);
+        base.protocol = parts.protocol;
+        base.pathname = base.pathname === '/' ? parts.pathname : base.pathname + parts.pathname;
+        base.search = parts.search;
+        return base.href;
     }
 }
 

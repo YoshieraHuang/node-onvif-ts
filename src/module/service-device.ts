@@ -14,6 +14,14 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         return this.timeDiff;
     }
 
+    private fixTimeDiff(date: Date) {
+      if (date) {
+        const deviceTime = date.getTime();
+        const myTime = (new Date()).getTime();
+        this.timeDiff = deviceTime - myTime;
+      }
+    }
+
     getCapabilities(): Promise<Result> {
         let soapBody = '';
         soapBody += '<tds:GetCapabilities>';
@@ -59,6 +67,16 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         soapBody += '</tds:AddScopes>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'AddScopes', soap);
+    }
+
+    removeScopes(params: {Scopes: string[]}): Promise<Result> {
+        let soapBody = '<tds:RemoveScopes>';
+        params.Scopes.forEach((s) => {
+            soapBody += '<tds:ScopeItem>' + s + '</tds:ScopeItem>';
+        });
+        soapBody += '</tds:RemoveScopes>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'RemoveScopes', soap);
     }
 
     getHostname(): Promise<Result> {
@@ -186,16 +204,25 @@ export class OnvifServiceDevice extends OnvifServiceBase{
 
     getSystemDateAndTime(): Promise<Result> {
         const soapBody = '<tds:GetSystemDateAndTime/>';
-        const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, 'GetSystemDateAndTime', soap).then((result) => {
+        return new Promise<Result>((resolve, reject) => {
+          const soap = this.createRequestSoap(soapBody, true);
+          requestCommand(this.oxaddr, 'GetSystemDateAndTime', soap)
+          .then((result) => {
             const parsed = parseGetSystemDateAndTime(result.converted);
-            if (parsed && parsed.date) {
-                const deviceTime = parsed.date.getTime();
-                const myTime = (new Date()).getTime();
-                this.timeDiff = deviceTime - myTime;
-            }
-            return result;
-        });
+            this.fixTimeDiff(parsed?.date);
+            return resolve(result);
+          })
+          .catch((error) => {
+            const newSoap = this.createRequestSoap(soapBody);
+            requestCommand(this.oxaddr, 'GetSystemDateAndTime', newSoap)
+            .then((result) => {
+              const parsed = parseGetSystemDateAndTime(result.converted);
+              this.fixTimeDiff(parsed?.date);
+              return resolve(result);
+            })
+            .catch((err) => reject(err));
+          });
+        })
     }
 
     setSystemDateAndTime(params: SetSystemDateAndTimeParams): Promise<Result> {
@@ -241,9 +268,9 @@ export class OnvifServiceDevice extends OnvifServiceBase{
         const soapBody = '<tds:GetUsers/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetUsers', soap).then((result) => {
-            const d = result.data?.GetUserResponse?.User;
+            const d = result.data?.GetUsersResponse?.User;
             if (d && !Array.isArray(d)) {
-                result.data.GetUserResponse.User = [d];
+                result.data.GetUsersResponse.User = [d];
             }
             return result;
         });
@@ -266,7 +293,7 @@ export class OnvifServiceDevice extends OnvifServiceBase{
     deleteUser(params: DeleteUserParams): Promise<Result> {
         let soapBody = '<tds:DeleteUsers>';
         params.User.forEach((u) => {
-			soapBody += `<tt:Username>${u.Username}</tt:Username>`;
+			soapBody += `<tds:Username>${u.Username}</tds:Username>`;
         });
         soapBody += '</tds:DeleteUsers>';
         const soap = this.createRequestSoap(soapBody);
@@ -274,21 +301,19 @@ export class OnvifServiceDevice extends OnvifServiceBase{
     }
 
     setUser(params: SetUserParams): Promise<Result> {
-        let soapBody = '<tds:SetUsers>';
+        let soapBody = '<tds:SetUser>';
         params.User.forEach((u) => {
             soapBody += '<tds:User>';
             soapBody += `<tt:Username>${u.Username}</tt:Username>`;
             if (u.Password) {
                 soapBody += `<tt:Password>${u.Password}</tt:Password>`;
             }
-            if (u.UserLevel) {
-                soapBody += `<tt:UserLevel>${u.UserLevel}</tt:UserLevel>`;
-            }
+            soapBody += `<tt:UserLevel>${u.UserLevel}<tt:UserLevel>`;
 			soapBody += '</tds:User>';
         });
-        soapBody += '</tds:SetUsers>';
+        soapBody += '</tds:SetUser>';
         const soap = this.createRequestSoap(soapBody);
-        return requestCommand(this.oxaddr, 'SetUsers', soap);
+        return requestCommand(this.oxaddr, 'SetUser', soap);
     }
 
     getRelayOutputs(): Promise<Result> {
@@ -393,7 +418,7 @@ export interface SetNTPParams {
     NTPManual?: IPAddress | {Type: 'DNS', DNS: string};
 }
 export interface SetUserParams {
-    User: {Username: string, Password?: string, UserLevel?: 'Administrator' | 'Operator' | 'User' | 'Anonymous' }[];
+    User: {Username: string, Password?: string, UserLevel: 'Administrator' | 'Operator' | 'User' | 'Anonymous' }[];
 }
 
 export interface DeleteUserParams {
@@ -434,9 +459,9 @@ function parseGetSystemDateAndTime(s: any) {
 	const type = s2.DateTimeType || '';
 	let dst = null;
 	if(s2.DaylightSavings) {
-		dst = (s2.DaylightSavings === 'true') ? true : false;
+		dst = s2.DaylightSavings === 'true';
 	}
-	const tz = (s2.TimeZone && s2.TimeZone.TZ) ? s2.TimeZone.TZ : '';
+	const tz = s2.TimeZone?.TZ || '';
 	let date = null;
 	if(s2.UTCDateTime) {
 		const udt = s2.UTCDateTime;

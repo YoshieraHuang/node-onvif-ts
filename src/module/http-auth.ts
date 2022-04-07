@@ -54,7 +54,7 @@ export class OnvifHttpAuth {
         h.split(/,\s*/).forEach((s) => {
             const pair = s.split('=');
             const k = pair[0] as 'algorithm' | 'nonce' | 'Digest realm' | 'qop';
-            let v = pair[1];
+            let v = pair.slice(1).join('=');
             if(!k || !v) {
                 return;
             }
