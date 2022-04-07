@@ -512,6 +512,34 @@ export class OnvifServiceMedia extends OnvifServiceBase {
         return requestCommand(this.oxaddr, 'GetAudioEncoderConfigurationOptions', soap);
     }
 
+    setAudioEncoderConfiguration(params: SetAudioEncoderConfigurationParams): Promise<Result> {
+        let soapBody = '';
+        soapBody += '<trt:SetAudioEncoderConfiguration>';
+        soapBody += '<trt:Configuration token = "' + params.ConfigurationToken + '"';
+        soapBody += '>';
+        soapBody += '<tt:Name>' + params.Name + '</tt:Name>';
+        soapBody += '<tt:UseCount>0</tt:UseCount>';
+        soapBody += '<tt:Encoding>' + params.Encoding + '</tt:Encoding>';
+        soapBody += '<tt:Bitrate>' + params.Bitrate + '</tt:Bitrate>';
+        soapBody += '<tt:SampleRate>' + params.SampleRate + '</tt:SampleRate>';
+        soapBody += '<tt:Multicast>';
+        soapBody += '<tt:Address>';
+        soapBody += '<tt:Type>IPv4</tt:Type>';
+        soapBody += '<tt:IPv4Address>0.0.0.0</tt:IPv4Address>';
+        soapBody += '<tt:IPv6Address></tt:IPv6Address>';
+        soapBody += '</tt:Address>';
+        soapBody += '<tt:Port>0</tt:Port>';
+        soapBody += '<tt:TTL>5</tt:TTL>';
+        soapBody += '<tt:AutoStart>false</tt:AutoStart>';
+        soapBody += '</tt:Multicast>';
+        soapBody += '<tt:SessionTimeout>PT60S</tt:SessionTimeout>';
+        soapBody += '</trt:Configuration>';
+        soapBody += '<trt:ForcePersistence>true</trt:ForcePersistence>';
+        soapBody += '</trt:SetAudioEncoderConfiguration>';
+        const soap = this.createRequestSoap(soapBody);
+        return requestCommand(this.oxaddr, 'SetAudioEncoderConfiguration', soap);
+    }
+
     startMulticastStreaming(params: ProfileTokenParams): Promise<Result> {
         let soapBody = '';
 		soapBody += '<trt:StartMulticastStreaming>';
@@ -686,3 +714,10 @@ export type SetAudioSourceConfigurationParams = {
     SourceToken: string;
 }
 
+export type SetAudioEncoderConfigurationParams = {
+    ConfigurationToken: string;
+    Name: string;
+    Encoding: 'G711' | 'G726' | 'AAC';
+    Bitrate: number;
+    SampleRate: number;
+}
