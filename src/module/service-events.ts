@@ -14,7 +14,7 @@ export class OnvifServiceEvents extends OnvifServiceBase {
     }
 
     getEventProperties() {
-        const soapBody = '<tds:GetEventProperties/>';
+        const soapBody = '<tev:GetEventProperties/>';
         const soap = this.createRequestSoap(soapBody);
         return requestCommand(this.oxaddr, 'GetEventProperties', soap);
     }
