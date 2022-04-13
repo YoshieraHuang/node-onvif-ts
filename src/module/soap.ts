@@ -11,7 +11,7 @@ export interface Result {
 }
 
 
-const HTTP_TIMEOUT = 10000; // ms
+const HTTP_TIMEOUT = 3000; // ms
 
 export function parse(soap: string) {
     return parseStringPromise(soap, {

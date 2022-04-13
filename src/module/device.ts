@@ -117,17 +117,6 @@ export class OnvifDevice extends EventEmitter{
         return this.getInformation();
     }
 
-    async servicesInit() {
-        await this.getSystemDateAndTime();
-        await this.getServices();
-    }
-
-    async deviceInformationInit() {
-        await this.getSystemDateAndTime();
-        await this.getDeviceInformation();
-        return this.getInformation();
-    }
-
     fetchSnapshot(): Promise<Snapshot> {
         if (!this.currentProfile) {
             return Promise.reject(new Error('No media profile is selected'));
@@ -284,51 +273,6 @@ export class OnvifDevice extends EventEmitter{
         if (ptzXaddr) {
             this.services.ptz = new OnvifServicePtz({
                 xaddr: this.getXaddr(ptzXaddr),
-                timeDiff: this.timeDiff,
-                user: this.user,
-                pass: this.pass,
-            });
-        }
-    }
-
-    private async getServices() {
-        let res: Result;
-        try {
-            res = await this.services.device.getServices({ IncludeCapability: false });
-        } catch (e) {
-            throw new Error('Failed to initialize the device: ' + e.toString());
-        }
-
-        this.lastResponse = res;
-        const c = res.data?.GetServicesResponse?.Service;
-        if (!c || !c.length) {
-            throw new Error('Failed to initialize the device: No services were found.');
-        }
-
-        const eventsService = c.find((s: any) => s.Namespace.indexOf('http://www.onvif.org/ver10/events/wsdl') >= 0);
-        if (eventsService) {
-            this.services.events = new OnvifServiceEvents({
-                xaddr: this.getXaddr(eventsService.XAddr),
-                timeDiff: this.timeDiff,
-                user: this.user,
-                pass: this.pass,
-            });
-        }
-
-        const mediaService = c.find((s: any) => s.Namespace.indexOf('http://www.onvif.org/ver10/media/wsdl') >= 0);
-        if (mediaService) {
-            this.services.media = new OnvifServiceMedia({
-                xaddr: this.getXaddr(mediaService.XAddr),
-                timeDiff: this.timeDiff,
-                user: this.user,
-                pass: this.pass,
-            });
-        }
-
-        const ptzService = c.find((s: any) => s.Namespace.indexOf('http://www.onvif.org/ver20/ptz/wsdl') >= 0);
-        if (ptzService) {
-            this.services.ptz = new OnvifServicePtz({
-                xaddr: this.getXaddr(ptzService.XAddr),
                 timeDiff: this.timeDiff,
                 user: this.user,
                 pass: this.pass,
